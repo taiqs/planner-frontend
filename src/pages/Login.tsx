@@ -23,6 +23,7 @@ export function Login() {
     const [name, setName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
+    const [isAlreadyPatient, setIsAlreadyPatient] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -35,7 +36,8 @@ export function Login() {
                     email,
                     password,
                     name,
-                    role: 'PATIENT' // Cadastro público é sempre paciente
+                    role: 'PATIENT', // Cadastro público é sempre paciente
+                    isAlreadyPatient
                 });
 
                 toast.success('Conta criada com sucesso!');
@@ -95,6 +97,21 @@ export function Login() {
                                 onChange={e => setName(e.target.value)}
                                 required
                             />
+                        </div>
+                    )}
+
+                    {isRegister && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px' }}>
+                            <input
+                                type="checkbox"
+                                id="alreadyPatient"
+                                checked={isAlreadyPatient}
+                                onChange={e => setIsAlreadyPatient(e.target.checked)}
+                                style={{ accentColor: 'var(--co-accent)', width: '18px', height: '18px' }}
+                            />
+                            <label htmlFor="alreadyPatient" className="text-muted" style={{ fontSize: '0.9rem', cursor: 'pointer' }}>
+                                Já sou paciente da clínica
+                            </label>
                         </div>
                     )}
 
