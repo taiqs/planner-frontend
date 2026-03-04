@@ -62,7 +62,7 @@ export function Dashboard() {
                 const lastNotifiedSession = localStorage.getItem(`push_session_${nextApt.id}`);
 
                 if (isToday && !lastNotifiedSession) {
-                    sendPushNotification("📅 Sessão Hoje!", { body: `Você tem uma sessão marcada para às ${aptDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}.` });
+                    sendPushNotification();
                     localStorage.setItem(`push_session_${nextApt.id}`, 'true');
                 }
             }
@@ -72,7 +72,7 @@ export function Dashboard() {
             if (streakVal > 0) {
                 const lastNotifiedMood = localStorage.getItem('push_mood');
                 if (lastNotifiedMood !== new Date().toDateString()) {
-                    sendPushNotification("🧠 Como você está hoje?", { body: "Tire um minutinho para registrar seu humor." });
+                    sendPushNotification();
                     localStorage.setItem('push_mood', new Date().toDateString());
                 }
             }

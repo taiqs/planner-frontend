@@ -47,6 +47,6 @@ export const requestNotificationPermission = async () => {
     }
 };
 
-export const sendPushNotification = (title: string, options?: NotificationOptions) => {
+export const sendPushNotification = () => {
     // Agora isso é feito pelo Backend Jobs
 };
