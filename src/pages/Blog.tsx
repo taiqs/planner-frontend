@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, BookOpen, Clock, Tag, Loader2 } from 'lucide-react';
 import api from '../services/api';
+import { getProxyUrl } from '../utils/fileProxy';
 
 export function Blog() {
     const navigate = useNavigate();
@@ -51,7 +52,7 @@ export function Blog() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {articles.map(article => (
                         <article key={article.id} className="glass-card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s ease' }}>
-                            <div style={{ height: '140px', background: `url(${article.imageUrl || 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80'}) center/cover no-repeat` }} />
+                            <div style={{ height: '140px', background: `url(${getProxyUrl(article.imageUrl) || 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80'}) center/cover no-repeat` }} />
 
                             <div style={{ padding: '20px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>

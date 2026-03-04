@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Activity, Users, Calendar as CalendarIcon, LogOut, BookOpen, Brain, Bell, BellRing, Check, X } from 'lucide-react';
 import api from '../services/api';
+import { getProxyUrl } from '../utils/fileProxy';
 
 export function PsychologistSidebar({ activePath }: { activePath: string }) {
     const navigate = useNavigate();
@@ -58,7 +59,7 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden' }}>
                         {user?.avatarUrl ? (
-                            <img src={user.avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <img src={getProxyUrl(user.avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                             name.charAt(0).toUpperCase()
                         )}

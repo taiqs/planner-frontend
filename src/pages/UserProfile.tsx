@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import { getProxyUrl } from '../utils/fileProxy';
 
 export function UserProfile() {
     const navigate = useNavigate();
@@ -151,7 +152,7 @@ export function UserProfile() {
                             {isUploading ? (
                                 <Loader2 className="animate-spin" size={32} color="var(--co-accent)" />
                             ) : avatarUrl ? (
-                                <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                <img src={getProxyUrl(avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                             ) : (
                                 name ? name.charAt(0).toUpperCase() : 'U'
                             )}

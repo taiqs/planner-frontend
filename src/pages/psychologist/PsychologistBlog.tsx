@@ -3,6 +3,7 @@ import { PsychologistSidebar } from '../../components/PsychologistSidebar';
 import { Plus, Image, Send, LayoutTemplate, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { getProxyUrl } from '../../utils/fileProxy';
 
 export function PsychologistBlog() {
     const [isWriting, setIsWriting] = useState(false);
@@ -147,7 +148,7 @@ export function PsychologistBlog() {
                             ) : (
                                 articles.map(article => (
                                     <div key={article.id} className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                                        <div style={{ height: '160px', background: `url(${article.imageUrl}) center/cover` }} />
+                                        <div style={{ height: '160px', background: `url(${getProxyUrl(article.imageUrl)}) center/cover` }} />
                                         <div style={{ padding: '24px' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.8rem', color: 'var(--co-text-muted)', fontWeight: 600 }}>
                                                 <span>{new Date(article.createdAt).toLocaleDateString()}</span>

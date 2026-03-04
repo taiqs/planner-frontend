@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ChevronRight, Loader2 } from 'lucide-react';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import api from '../services/api';
+import { getProxyUrl } from '../utils/fileProxy';
 
 export function DayDetail() {
     const navigate = useNavigate();
@@ -103,7 +104,7 @@ export function DayDetail() {
                                         <div style={{ background: 'var(--co-white)', padding: '8px', borderRadius: '50%' }}>🎙️</div>
                                         <div>
                                             <p style={{ fontWeight: 600, fontSize: '0.9rem' }}>Áudio Anexado</p>
-                                            <a href={v.audioUrl} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: 'var(--co-action)' }}>Ouvir na Nuvem</a>
+                                            <a href={getProxyUrl(v.audioUrl)} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: 'var(--co-action)' }}>Ouvir na Nuvem</a>
                                         </div>
                                     </div>
                                 )}

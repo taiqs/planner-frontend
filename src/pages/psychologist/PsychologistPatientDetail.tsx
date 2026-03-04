@@ -5,6 +5,7 @@ import { PsychologistSidebar } from '../../components/PsychologistSidebar';
 import { MOOD_CATEGORIES } from '../../utils/constants';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
+import { getProxyUrl } from '../../utils/fileProxy';
 
 export function PsychologistPatientDetail() {
     const navigate = useNavigate();
@@ -219,7 +220,7 @@ export function PsychologistPatientDetail() {
 
                                             {vault.audioUrl && (
                                                 <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid rgba(0,0,0,0.05)' }}>
-                                                    <a href={vault.audioUrl} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: 'var(--co-action)', fontWeight: 600, textDecoration: 'none' }}>▶️ Ouvir Áudio Compartilhado</a>
+                                                    <a href={getProxyUrl(vault.audioUrl)} target="_blank" rel="noreferrer" style={{ fontSize: '0.8rem', color: 'var(--co-action)', fontWeight: 600, textDecoration: 'none' }}>▶️ Ouvir Áudio Compartilhado</a>
                                                 </div>
                                             )}
                                         </div>
