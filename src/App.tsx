@@ -13,6 +13,7 @@ import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
 import { Calendar } from './pages/Calendar';
 import { DayDetail } from './pages/DayDetail';
+import { VaultList } from './pages/VaultList';
 import { Planner } from './pages/Planner';
 import { EmergencyChat } from './pages/EmergencyChat';
 import { UserProfile } from './pages/UserProfile';
@@ -61,6 +62,7 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/planner" element={<Planner />} />
           <Route path="/calendario" element={<Calendar />} />
+          <Route path="/cofre" element={<VaultList />} />
           <Route path="/dia/:diaId" element={<DayDetail />} />
           <Route path="/emergencia" element={<EmergencyChat />} />
           <Route path="/breathe" element={<Breathe />} />
