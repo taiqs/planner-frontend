@@ -24,6 +24,7 @@ export function Dashboard() {
     const [isLoadingData, setIsLoadingData] = useState(true);
 
     // Estado para o fluxo de registro de humor
+    const [loggedToday, setLoggedToday] = useState(false);
     const [selectedMainMood, setSelectedMainMood] = useState<string | null>(null);
     const [selectedSubEmotion, setSelectedSubEmotion] = useState<string | null>(null);
     const [moodSwing, setMoodSwing] = useState<boolean | null>(null);
@@ -54,6 +55,7 @@ export function Dashboard() {
             setHasPsychologist(!!user.psychologistId);
             setInterestedInTherapy(!!user.interestedInTherapy);
             setStreak(streakRes.data.streak || 0);
+            setLoggedToday(streakRes.data.loggedToday || false);
 
             const scheduled = aptsRes.data.filter((a: any) => a.status === 'SCHEDULED' && new Date(a.date).getTime() >= new Date().getTime() - 3600000); // Tira as que passaram muito, mas mantém a próxima mais de 1 hr de erro
             const nextApt = scheduled.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
@@ -140,6 +142,7 @@ export function Dashboard() {
 
             toast.success("Humor registrado com sucesso!");
             setSelectedMainMood(null); // Fecha modal
+            setLoggedToday(true); // Esconde o painel principal na hora
             loadDashboardData(); // Recarrega o streak pra ver se aumentou
         } catch (error: any) {
             toast.error(error.response?.data?.error || 'Erro ao registrar humor.');
@@ -192,22 +195,6 @@ export function Dashboard() {
                     </div>
                 </motion.div>
             )}
-
-            {/* Banner Teste Cognitivo */}
-            <motion.div
-                initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
-                className="glass-panel"
-                style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: 'linear-gradient(135deg, var(--co-lavender) 0%, rgba(166,124,255, 0.15) 100%)', color: 'var(--co-text-dark)', cursor: 'pointer', border: '1px solid var(--co-accent)' }}
-                onClick={() => navigate('/assessment')}
-            >
-                <div>
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', color: 'var(--co-primary)' }}>Descubra seu Perfil Cognitivo</h3>
-                    <p className="text-muted" style={{ fontSize: '0.9rem', opacity: 0.9 }}>Faça o teste rápido de 5 perguntas.</p>
-                </div>
-                <div style={{ width: '40px', height: '40px', borderRadius: '20px', background: 'var(--co-white)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-accent)', boxShadow: '0 2px 8px rgba(166,124,255,0.2)' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                </div>
-            </motion.div>
 
             {/* FLUXO EXPANDIDO DO HUMOR */}
             <AnimatePresence mode="wait">
@@ -295,10 +282,10 @@ export function Dashboard() {
                             {savingMood ? <Loader2 size={24} style={{ animation: 'spin 1.5s linear infinite' }} /> : 'Registrar no Calendário'}
                         </button>
                     </motion.div>
-                ) : (
+                ) : !loggedToday ? (
                     <motion.div
                         key="mood-selector"
-                        style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '40px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}
+                        style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', marginBottom: '24px', overflowX: 'auto', paddingBottom: '8px', scrollbarWidth: 'none' }}
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -315,8 +302,26 @@ export function Dashboard() {
                             </button>
                         ))}
                     </motion.div>
-                )}
+                ) : null}
             </AnimatePresence>
+
+            {/* Banner Teste Cognitivo */}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
+                className="glass-panel"
+                style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: 'linear-gradient(135deg, var(--co-lavender) 0%, rgba(166,124,255, 0.15) 100%)', color: 'var(--co-text-dark)', cursor: 'pointer', border: '1px solid var(--co-accent)' }}
+                onClick={() => navigate('/assessment')}
+            >
+                <div>
+                    <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', color: 'var(--co-primary)' }}>Descubra seu Perfil Cognitivo</h3>
+                    <p className="text-muted" style={{ fontSize: '0.9rem', opacity: 0.9 }}>Faça o teste rápido de 5 perguntas.</p>
+                </div>
+                <div style={{ width: '40px', height: '40px', borderRadius: '20px', background: 'var(--co-white)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-accent)', boxShadow: '0 2px 8px rgba(166,124,255,0.2)' }}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                </div>
+            </motion.div>
+
+            {/* Trocado de lugar. */}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
                 <h2 style={{ fontSize: '1.25rem' }}>Ações Rápidas</h2>
@@ -421,7 +426,7 @@ export function Dashboard() {
                     >
                         <motion.div
                             initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                            style={{ background: 'var(--co-bg-light)', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '32px 24px', position: 'relative' }}
+                            style={{ background: 'var(--co-white)', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '32px 24px', position: 'relative' }}
                             onClick={e => e.stopPropagation()}
                         >
                             <button
