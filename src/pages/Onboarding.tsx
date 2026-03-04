@@ -10,6 +10,7 @@ export function Onboarding() {
     const [name, setName] = useState('');
     const [pronouns, setPronouns] = useState('');
     const [birthDate, setBirthDate] = useState('');
+    const [phone, setPhone] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
@@ -18,6 +19,7 @@ export function Onboarding() {
         if (userStr) {
             const user = JSON.parse(userStr);
             if (user.name) setName(user.name);
+            if (user.phone) setPhone(user.phone);
         }
     }, []);
 
@@ -29,7 +31,8 @@ export function Onboarding() {
             const response = await api.put('/user/profile', {
                 name,
                 pronouns,
-                birthDate
+                birthDate,
+                phone
             });
 
             // Atualiza o local storage
@@ -99,6 +102,17 @@ export function Onboarding() {
                             className="input-field"
                             value={birthDate}
                             onChange={(e) => setBirthDate(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '8px', display: 'block', fontWeight: 500 }}>Seu Telefone (WhatsApp)</label>
+                        <input
+                            type="tel"
+                            className="input-field"
+                            placeholder="(11) 99999-9999"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                            required
                         />
                     </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Phone, Sparkles } from 'lucide-react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
 import api from '../../services/api';
 
@@ -30,7 +30,11 @@ export function PsychologistPatients() {
     // Em um app real com milhares de usuários, essa lógica ficaria no back-end com paginação.
     // Como é um MVP para a psicóloga única, podemos fazer no front.
     const myPatients = patients.filter(p => p.psychologistId !== null);
-    const otherUsers = patients.filter(p => p.psychologistId === null);
+    const otherUsers = patients.filter(p => p.psychologistId === null).sort((a, b) => {
+        if (a.interestedInTherapy && !b.interestedInTherapy) return -1;
+        if (!a.interestedInTherapy && b.interestedInTherapy) return 1;
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+    });
 
     const handleLinkPatient = async (email: string) => {
         setIsLinking(true);
@@ -117,14 +121,24 @@ export function PsychologistPatients() {
                         ) : (
                             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
                                 {otherUsers.map(u => (
-                                    <div key={u.id} className="glass-card" style={{ padding: '24px', background: 'var(--co-white)', cursor: 'pointer', position: 'relative' }} onClick={() => navigate(`/psicologo/paciente/${u.id}`)}>
+                                    <div key={u.id} className="glass-card" style={{ padding: '24px', background: 'var(--co-white)', cursor: 'pointer', position: 'relative', border: u.interestedInTherapy ? '2px solid var(--co-accent)' : '1px solid rgba(0,0,0,0.05)' }} onClick={() => navigate(`/psicologo/paciente/${u.id}`)}>
+                                        {u.interestedInTherapy && (
+                                            <div style={{ position: 'absolute', top: '-12px', right: '16px', background: 'var(--co-accent)', color: '#fff', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '4px', boxShadow: '0 4px 12px rgba(166,124,255,0.4)' }}>
+                                                <Sparkles size={14} /> Terapia
+                                            </div>
+                                        )}
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
-                                            <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: 'var(--co-serene-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem' }}>
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: u.interestedInTherapy ? 'var(--co-lavender)' : 'var(--co-serene-blue)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', fontSize: '1.2rem', color: u.interestedInTherapy ? 'var(--co-primary)' : '#000' }}>
                                                 {u.name?.charAt(0).toUpperCase()}
                                             </div>
                                             <div style={{ overflow: 'hidden' }}>
-                                                <h3 style={{ fontSize: '1.1rem', textTransform: 'capitalize', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{u.name}</h3>
+                                                <h3 style={{ fontSize: '1.1rem', textTransform: 'capitalize', whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', marginBottom: '4px' }}>{u.name}</h3>
                                                 <p className="text-muted" style={{ fontSize: '0.85rem' }}>{u.email}</p>
+                                                {u.phone && (
+                                                    <p style={{ fontSize: '0.85rem', color: 'var(--co-text-dark)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '4px', fontWeight: 500 }}>
+                                                        <Phone size={12} className="text-muted" /> {u.phone}
+                                                    </p>
+                                                )}
                                             </div>
                                         </div>
 

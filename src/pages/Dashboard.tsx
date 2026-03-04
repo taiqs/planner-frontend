@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download } from 'lucide-react';
+import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import api from '../services/api';
@@ -17,6 +17,9 @@ export function Dashboard() {
     const [streak, setStreak] = useState(0);
     const [emergencyEnabled, setEmergencyEnabled] = useState(false);
     const [hasPsychologist, setHasPsychologist] = useState(false);
+    const [interestedInTherapy, setInterestedInTherapy] = useState(false);
+    const [showPlansModal, setShowPlansModal] = useState(false);
+    const [isUpdatingInterest, setIsUpdatingInterest] = useState(false);
     const [nextAppointment, setNextAppointment] = useState<any>(null);
     const [isLoadingData, setIsLoadingData] = useState(true);
 
@@ -49,6 +52,7 @@ export function Dashboard() {
             setUserInitial(user.name?.charAt(0).toUpperCase() || 'P');
             setEmergencyEnabled(user.emergencyEnabled);
             setHasPsychologist(!!user.psychologistId);
+            setInterestedInTherapy(!!user.interestedInTherapy);
             setStreak(streakRes.data.streak || 0);
 
             const scheduled = aptsRes.data.filter((a: any) => a.status === 'SCHEDULED' && new Date(a.date).getTime() >= new Date().getTime() - 3600000); // Tira as que passaram muito, mas mantém a próxima mais de 1 hr de erro
@@ -88,6 +92,33 @@ export function Dashboard() {
     };
 
     // Handlers do fluxo
+    const handleToggleInterest = async () => {
+        setIsUpdatingInterest(true);
+        try {
+            const newStatus = !interestedInTherapy;
+            await api.put('/user/interest', { interested: newStatus });
+            setInterestedInTherapy(newStatus);
+            if (newStatus) {
+                toast.success("Interesse registrado! Em breve a psicóloga entrará em contato.");
+                setShowPlansModal(false);
+            } else {
+                toast.success("Interesse removido.");
+            }
+
+            // Atualiza cache local
+            const userStr = localStorage.getItem('user');
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                user.interestedInTherapy = newStatus;
+                localStorage.setItem('user', JSON.stringify(user));
+            }
+        } catch (error) {
+            toast.error("Erro ao atualizar interesse.");
+        } finally {
+            setIsUpdatingInterest(false);
+        }
+    }
+
     const handleMainMoodSelect = (moodKey: string) => {
         setSelectedMainMood(moodKey);
         setSelectedSubEmotion(null);
@@ -301,6 +332,29 @@ export function Dashboard() {
                     <ChevronRight size={20} className="text-muted" />
                 </div>
 
+                {!hasPsychologist && (
+                    <div
+                        className="glass-card"
+                        style={{ padding: '24px', cursor: 'pointer', background: 'linear-gradient(135deg, var(--co-lavender) 0%, rgba(166,124,255, 0.2) 100%)', border: '1px solid var(--co-accent)' }}
+                        onClick={() => setShowPlansModal(true)}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
+                            <div style={{ background: 'var(--co-accent)', width: '48px', height: '48px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Sparkles size={24} color="#fff" />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', color: 'var(--co-primary)' }}>Iniciar Terapia</h3>
+                                <p style={{ fontSize: '0.9rem', color: 'var(--co-text-dark)', opacity: 0.9 }}>Conheça nossos planos e inicie seu acompanhamento profissional.</p>
+                            </div>
+                        </div>
+                        {interestedInTherapy && (
+                            <div style={{ background: '#E8F5E9', color: '#2E7D32', padding: '8px 12px', borderRadius: '8px', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center' }}>
+                                <Check size={16} /> Você demonstrou interesse! Aguarde contato.
+                            </div>
+                        )}
+                    </div>
+                )}
+
                 {hasPsychologist && (
                     <>
                         <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/blog')}>
@@ -356,6 +410,82 @@ export function Dashboard() {
                     </motion.div>
                 )}
             </div>
+
+            {/* Modal de Planos */}
+            <AnimatePresence>
+                {showPlansModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 100, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                        onClick={() => setShowPlansModal(false)}
+                    >
+                        <motion.div
+                            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            style={{ background: 'var(--co-bg-light)', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '32px 24px', position: 'relative' }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button
+                                style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--co-white)', border: 'none', width: '40px', height: '40px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer' }}
+                                onClick={() => setShowPlansModal(false)}
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                                <div style={{ width: '64px', height: '64px', borderRadius: '32px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                                    <Sparkles size={32} color="var(--co-accent)" />
+                                </div>
+                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Evolua com a Terapia</h2>
+                                <p className="text-muted">Acompanhamento psicológico profissional focado no seu bem-estar e desenvolvimento pessoal.</p>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
+                                <div className="glass-card" style={{ padding: '24px', border: '2px solid var(--co-accent)', position: 'relative' }}>
+                                    <div style={{ position: 'absolute', top: '-12px', right: '24px', background: 'var(--co-accent)', color: '#fff', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold' }}>
+                                        Mais Escolhido
+                                    </div>
+                                    <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>Sessões Semanais</h3>
+                                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '16px' }}>Ideal para um acompanhamento contínuo e aprofundado.</p>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--co-primary)', marginBottom: '16px' }}>
+                                        R$ 150 <span style={{ fontSize: '1rem', color: 'var(--co-text-dark)', fontWeight: 400 }}>/ sessão</span>
+                                    </div>
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> 4 sessões mensais (50 min)</li>
+                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Acesso ao Botão de Emergência</li>
+                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Materiais exclusivos e exercícios</li>
+                                    </ul>
+                                </div>
+
+                                <div className="glass-card" style={{ padding: '24px' }}>
+                                    <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>Sessões Quinzenais</h3>
+                                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '16px' }}>Para manutenção e acompanhamento pontual.</p>
+                                    <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--co-primary)', marginBottom: '16px' }}>
+                                        R$ 180 <span style={{ fontSize: '1rem', color: 'var(--co-text-dark)', fontWeight: 400 }}>/ sessão</span>
+                                    </div>
+                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> 2 sessões mensais (50 min)</li>
+                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Suporte via chat em horário comercial</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <button
+                                className="btn-primary"
+                                style={{ width: '100%', padding: '16px', borderRadius: '16px', fontSize: '1.1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
+                                onClick={handleToggleInterest}
+                                disabled={isUpdatingInterest}
+                            >
+                                {isUpdatingInterest ? <Loader2 className="animate-spin" size={24} /> : interestedInTherapy ? 'Cancelar Interesse' : 'Quero Iniciar a Terapia!'}
+                            </button>
+                            {!interestedInTherapy && (
+                                <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--co-text-dark)', marginTop: '16px', opacity: 0.8 }}>
+                                    Ao clicar acima, a dra. Tailiny entrará em contato com você pelo WhatsApp para agendar a primeira conversa.
+                                </p>
+                            )}
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }
