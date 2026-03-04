@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X, Check, Loader2 } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, X, Check, Loader2 } from 'lucide-react';
 import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import toast from 'react-hot-toast';
@@ -45,33 +45,54 @@ export function Calendar() {
         loadHistory();
     }, []);
 
+    const [currentDate, setCurrentDate] = useState(new Date());
+
+    const nextMonth = () => {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1));
+    };
+
+    const prevMonth = () => {
+        setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
+    };
+
     // Helper: Pega Humor do Dia (YYYY-MM-DD string para facilitar)
     const getMoodForDay = (dayStr: string) => {
         return moodHistory.find(m => {
             const mDate = new Date(m.date);
-            // Ignorando fuso para MVP simplificado
+            // Ignore o Timezone local (Y-m-d exato do BD UTC simplificado)
             return mDate.toISOString().split('T')[0] === dayStr;
         });
     };
 
-    // Construção Visual - Dias de Setembro 2026 (Fixado para protótipo visual, ideal seria Date() dinâmico)
-    const year = 2026;
-    const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1);
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1; // 1 to 12
+    const daysInMonthCount = new Date(year, month, 0).getDate();
+    const firstDayOfMonth = new Date(year, currentDate.getMonth(), 1).getDay(); // 0 (Sun) to 6 (Sat)
+
+    // Adjusting to make Monday=0, Sunday=6 for our D S T Q Q S S layout 
+    // Wait, the layout is D S T Q Q S S (Dom, Seg, Ter, Qua, Qui, Sex, Sab) -> standard: Sun=0.
+    const emptySlots = Array.from({ length: firstDayOfMonth }, (_, i) => i);
+    const daysInMonth = Array.from({ length: daysInMonthCount }, (_, i) => i + 1);
+
+    const formatDayStr = (d: number, mo = month, y = year) => {
+        return `${y}-${mo.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
+    };
 
     const getEmoji = (day: number) => {
-        const dayStr = `${year}-09-${day.toString().padStart(2, '0')}`;
-        const mood = getMoodForDay(dayStr);
+        const mood = getMoodForDay(formatDayStr(day));
         if (mood && MOOD_CATEGORIES[mood.mainMood as keyof typeof MOOD_CATEGORIES]) {
             return MOOD_CATEGORIES[mood.mainMood as keyof typeof MOOD_CATEGORIES].emoji;
         }
         return '';
     };
 
-    // Montar Grafico da Semana Ativa Baseado no Histórico
+    // Montar Grafico da Semana Ativa Baseado no Histórico (Últimos 7 dias a partir de hoje)
     const weeklyMoodData = Array.from({ length: 7 }, (_, i) => {
-        // Pega os ultimos 7 dias de Setembro (Ex: 24 a 30)
-        const d = 24 + i;
-        const dayStr = `${year}-09-${d.toString().padStart(2, '0')}`;
+        const today = new Date();
+        const d = new Date(today);
+        d.setDate(today.getDate() - (6 - i)); // -6, -5, ..., 0
+
+        const dayStr = d.toISOString().split('T')[0];
         const mood = getMoodForDay(dayStr);
 
         let level = 3; // Neutro Default
@@ -79,8 +100,8 @@ export function Calendar() {
             level = MOOD_LEVELS[mood.mainMood as keyof typeof MOOD_LEVELS] || 3;
         }
 
-        const labels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-        return { name: labels[i], mood: level };
+        const labels = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        return { name: labels[d.getDay()], mood: level };
     });
 
     const handleMainMoodSelect = (moodKey: string) => {
@@ -113,15 +134,23 @@ export function Calendar() {
     };
 
     const handleDayClick = (day: number) => {
-        const dayStr = `${year}-09-${day.toString().padStart(2, '0')}`;
+        const dayStr = formatDayStr(day);
         // Envia o dia para a rota DayDetail via State
         navigate(`/dia/${dayStr}`);
     };
 
     return (
         <div className="container" style={{ paddingBottom: '100px', position: 'relative' }}>
-            <header style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingTop: '16px' }}>
-                <h1 style={{ fontSize: '1.5rem' }}>Setembro 2026</h1>
+            <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px' }}>
+                <button className="btn-secondary" style={{ padding: '8px', borderRadius: '12px' }} onClick={prevMonth}>
+                    <ChevronLeft size={20} />
+                </button>
+                <h1 style={{ fontSize: '1.25rem', margin: 0, textTransform: 'capitalize' }}>
+                    {currentDate.toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                </h1>
+                <button className="btn-secondary" style={{ padding: '8px', borderRadius: '12px' }} onClick={nextMonth}>
+                    <ChevronRight size={20} />
+                </button>
             </header>
 
             <div className="glass-panel" style={{ padding: '16px', marginBottom: '24px' }}>
@@ -130,9 +159,9 @@ export function Calendar() {
                 </div>
 
                 <div className="calendar-grid">
-                    {/* Empty slots for Setembro 2026 offset (Começa na Terça) */}
-                    <div className="calendar-day" style={{ visibility: 'hidden' }}></div>
-                    <div className="calendar-day" style={{ visibility: 'hidden' }}></div>
+                    {emptySlots.map((slot) => (
+                        <div key={`empty-${slot}`} className="calendar-day" style={{ visibility: 'hidden' }}></div>
+                    ))}
 
                     {daysInMonth.map((day) => (
                         <motion.div
