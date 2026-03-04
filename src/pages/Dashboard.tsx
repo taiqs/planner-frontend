@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles } from 'lucide-react';
+import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles, Brain } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import api from '../services/api';
@@ -359,6 +359,17 @@ export function Dashboard() {
                         )}
                     </div>
                 )}
+
+                <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/avaliacao-neuropsicologica')}>
+                    <div style={{ background: 'var(--co-lavender)', padding: '12px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Brain size={24} color="var(--co-text-dark)" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Avaliação Neuropsicológica</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Entenda etapas e valores</p>
+                    </div>
+                    <ChevronRight size={20} className="text-muted" />
+                </div>
 
                 {hasPsychologist && (
                     <>
