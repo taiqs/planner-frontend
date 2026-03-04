@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight, Loader2, PenTool, List } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -20,6 +20,19 @@ export function Planner() {
 
     const [isPrivate, setIsPrivate] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [hasPsychologist, setHasPsychologist] = useState(false);
+
+    useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            try {
+                const user = JSON.parse(userStr);
+                setHasPsychologist(!!user.psychologistId);
+            } catch (e) {
+                console.error("Erro ao ler usuário do storage", e);
+            }
+        }
+    }, []);
 
     const handleSave = async () => {
         if (isGuided) {
@@ -123,14 +136,18 @@ export function Planner() {
 
                 <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        <input
-                            type="checkbox"
-                            id="share"
-                            checked={!isPrivate}
-                            onChange={(e) => setIsPrivate(!e.target.checked)}
-                            style={{ accentColor: 'var(--co-accent-hover)', width: '18px', height: '18px' }}
-                        />
-                        <label htmlFor="share" className="text-muted" style={{ fontSize: '0.9rem' }}>Enviar para Psicóloga ler</label>
+                        {hasPsychologist && (
+                            <>
+                                <input
+                                    type="checkbox"
+                                    id="share"
+                                    checked={!isPrivate}
+                                    onChange={(e) => setIsPrivate(!e.target.checked)}
+                                    style={{ accentColor: 'var(--co-accent-hover)', width: '18px', height: '18px' }}
+                                />
+                                <label htmlFor="share" className="text-muted" style={{ fontSize: '0.9rem' }}>Enviar para Psicóloga</label>
+                            </>
+                        )}
                     </div>
                     <button
                         className="btn-primary"
