@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Brain, ChevronRight, CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { Brain, ChevronRight, CheckCircle, ArrowRight, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 
@@ -100,7 +100,7 @@ export function AssessmentQuiz() {
 
     if (result) {
         return (
-            <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '24px' }}>
+            <div className="container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '24px', paddingBottom: '100px' }}>
                 <header style={{ marginBottom: '32px' }}>
                     <button className="btn-secondary" style={{ padding: '8px', borderRadius: '12px' }} onClick={() => navigate('/dashboard')}>
                         <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} /> Voltar
@@ -123,13 +123,24 @@ export function AssessmentQuiz() {
                     </motion.div>
                 </div>
 
-                <div className="glass-panel" style={{ padding: '24px', textAlign: 'center' }}>
-                    <h3 style={{ fontSize: '1.1rem', marginBottom: '12px' }}>Gostou da experiência?</h3>
-                    <p style={{ fontSize: '0.9rem', color: 'var(--co-text-muted)', marginBottom: '16px' }}>
-                        A Dra. Tailiny Quirino acabou de receber uma notificação visualizando seus traços cognitivos. Marque um horário para entendermos melhor esse resultado na prática clínica!
+                <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', background: 'var(--co-lavender)', borderColor: 'var(--co-accent)' }}>
+                    <h3 style={{ fontSize: '1.1rem', marginBottom: '8px', color: 'var(--co-primary)' }}>Avaliação Neuropsicológica</h3>
+                    <p style={{ fontSize: '0.9rem', color: 'var(--co-text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
+                        O teste acima é apenas um rastreio inicial. Para um diagnóstico completo (como TDAH, Autismo ou Altas Habilidades) e um plano de desenvolvimento individual, a Avaliação Neuropsicológica é o caminho ideal.
                     </p>
-                    <button className="btn-primary" style={{ width: '100%', padding: '16px', borderRadius: '16px' }} onClick={() => navigate('/psicologos')} >
-                        Agendar Sessão
+                    <button
+                        className="btn-primary"
+                        style={{ width: '100%', padding: '16px', borderRadius: '16px', marginBottom: '12px', background: '#25D366', color: 'white' }}
+                        onClick={() => window.open('https://wa.me/', '_blank')}
+                    >
+                        Saber valores no WhatsApp
+                    </button>
+                    <button
+                        className="btn-secondary"
+                        style={{ width: '100%', padding: '16px', borderRadius: '16px', border: 'none', background: 'transparent', color: 'var(--co-text-muted)' }}
+                        onClick={() => navigate('/dashboard')}
+                    >
+                        Voltar ao Início
                     </button>
                 </div>
             </div>
@@ -137,7 +148,16 @@ export function AssessmentQuiz() {
     }
 
     return (
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '24px' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '24px', paddingBottom: '100px' }}>
+            <header style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8px' }}>
+                <button
+                    className="btn-secondary"
+                    style={{ padding: '8px', borderRadius: '50%', width: '40px', height: '40px', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', background: 'var(--co-lavender)' }}
+                    onClick={() => navigate('/dashboard')}
+                >
+                    <X size={20} color="var(--co-text-muted)" />
+                </button>
+            </header>
             {currentStep === -1 ? (
                 <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} style={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', textAlign: 'center' }}>
                     <div style={{ width: '80px', height: '80px', borderRadius: '40px', background: 'var(--co-serene-blue)', color: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
