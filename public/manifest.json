@@ -1,0 +1,21 @@
+{
+    "short_name": "Planner",
+    "name": "Planner Psicanálise",
+    "icons": [
+        {
+            "src": "/vite.svg",
+            "type": "image/svg+xml",
+            "sizes": "192x192"
+        },
+        {
+            "src": "/vite.svg",
+            "type": "image/svg+xml",
+            "sizes": "512x512"
+        }
+    ],
+    "start_url": "/",
+    "background_color": "#F3E5F5",
+    "display": "standalone",
+    "scope": "/",
+    "theme_color": "#A67CFF"
+}
