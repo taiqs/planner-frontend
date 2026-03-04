@@ -130,10 +130,10 @@ export function AssessmentQuiz() {
                     </p>
                     <button
                         className="btn-primary"
-                        style={{ width: '100%', padding: '16px', borderRadius: '16px', marginBottom: '12px', background: '#25D366', color: 'white' }}
-                        onClick={() => window.open('https://wa.me/', '_blank')}
+                        style={{ width: '100%', padding: '16px', borderRadius: '16px', marginBottom: '12px', background: 'var(--co-accent)', color: 'var(--co-text-dark)' }}
+                        onClick={() => navigate('/avaliacao-neuropsicologica')}
                     >
-                        Saber valores no WhatsApp
+                        Entender as etapas e valores
                     </button>
                     <button
                         className="btn-secondary"

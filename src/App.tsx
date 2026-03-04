@@ -19,6 +19,7 @@ import { UserProfile } from './pages/UserProfile';
 import { Breathe } from './pages/Breathe';
 import { Blog } from './pages/Blog';
 import { AssessmentQuiz } from './pages/AssessmentQuiz';
+import { NeuroEvalInfo } from './pages/NeuroEvalInfo';
 
 // Psychologist Pages
 import { PsychologistDashboard } from './pages/psychologist/PsychologistDashboard';
@@ -66,6 +67,7 @@ function App() {
           <Route path="/perfil" element={<UserProfile />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/assessment" element={<AssessmentQuiz />} />
+          <Route path="/avaliacao-neuropsicologica" element={<NeuroEvalInfo />} />
 
           <Route path="/psicologo/dashboard" element={<PsychologistDashboard />} />
           <Route path="/psicologo/pacientes" element={<PsychologistPatients />} />
