@@ -7,8 +7,8 @@ export function BottomNav() {
 
     const isActive = (path: string) => location.pathname === path;
 
-    // Don't show nav on login, onboarding, or psychologist areas
-    if (['/', '/onboarding', '/breathe'].includes(location.pathname) || location.pathname.startsWith('/psicologo')) return null;
+    // Don't show nav on login, onboarding, landing, or psychologist areas
+    if (['/', '/login', '/onboarding', '/breathe'].includes(location.pathname) || location.pathname.startsWith('/psicologo')) return null;
 
     return (
         <div className="bottom-nav">

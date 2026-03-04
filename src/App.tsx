@@ -7,6 +7,7 @@ import { requestNotificationPermission } from './utils/notifications';
 import { BottomNav } from './components/BottomNav';
 
 // Patient Pages
+import { Landing } from './pages/Landing';
 import { Login } from './pages/Login';
 import { Onboarding } from './pages/Onboarding';
 import { Dashboard } from './pages/Dashboard';
@@ -53,7 +54,8 @@ function App() {
           },
         }} />
         <Routes>
-          <Route path="/" element={<Login />} />
+          <Route path="/" element={<Landing />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/onboarding" element={<Onboarding />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/planner" element={<Planner />} />

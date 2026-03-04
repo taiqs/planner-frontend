@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { HeartPulse, Mail, Lock, User, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
@@ -7,7 +7,16 @@ import toast from 'react-hot-toast';
 
 export function Login() {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Check if location state instructed us to show the register form
     const [isRegister, setIsRegister] = useState(false);
+
+    useEffect(() => {
+        if (location.state?.register) {
+            setIsRegister(true);
+        }
+    }, [location.state]);
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
