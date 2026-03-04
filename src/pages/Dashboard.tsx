@@ -366,7 +366,7 @@ export function Dashboard() {
                     </div>
                     <div style={{ flex: 1 }}>
                         <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Avaliação Neuropsicológica</h3>
-                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Entenda etapas e valores</p>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Entenda como funciona</p>
                     </div>
                     <ChevronRight size={20} className="text-muted" />
                 </div>
