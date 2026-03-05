@@ -22,6 +22,7 @@ export function Dashboard() {
     const [isUpdatingInterest, setIsUpdatingInterest] = useState(false);
     const [nextAppointment, setNextAppointment] = useState<any>(null);
     const [isLoadingData, setIsLoadingData] = useState(true);
+    const [hasRecentAssessment, setHasRecentAssessment] = useState(false);
 
     // Estado para o fluxo de registro de humor
     const [loggedToday, setLoggedToday] = useState(false);
@@ -56,6 +57,12 @@ export function Dashboard() {
             setInterestedInTherapy(!!user.interestedInTherapy);
             setStreak(streakRes.data.streak || 0);
             setLoggedToday(streakRes.data.loggedToday || false);
+
+            if (user.assessmentResults && user.assessmentResults.length > 0) {
+                const lastDate = new Date(user.assessmentResults[0].createdAt).getTime();
+                const thirtyDaysInMs = 30 * 24 * 60 * 60 * 1000;
+                setHasRecentAssessment(Date.now() - lastDate < thirtyDaysInMs);
+            }
 
             const scheduled = aptsRes.data.filter((a: any) => a.status === 'SCHEDULED' && new Date(a.date).getTime() >= new Date().getTime() - 3600000); // Tira as que passaram muito, mas mantém a próxima mais de 1 hr de erro
             const nextApt = scheduled.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
@@ -305,23 +312,23 @@ export function Dashboard() {
                 ) : null}
             </AnimatePresence>
 
-            {/* Banner Teste Cognitivo */}
-            <motion.div
-                initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
-                className="glass-panel"
-                style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: 'linear-gradient(135deg, var(--co-lavender) 0%, rgba(166,124,255, 0.15) 100%)', color: 'var(--co-text-dark)', cursor: 'pointer', border: '1px solid var(--co-accent)' }}
-                onClick={() => navigate('/assessment')}
-            >
-                <div>
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', color: 'var(--co-primary)' }}>Descubra seu Perfil Cognitivo</h3>
-                    <p className="text-muted" style={{ fontSize: '0.9rem', opacity: 0.9 }}>Faça o teste rápido de 5 perguntas.</p>
-                </div>
-                <div style={{ width: '40px', height: '40px', borderRadius: '20px', background: 'var(--co-white)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-accent)', boxShadow: '0 2px 8px rgba(166,124,255,0.2)' }}>
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
-                </div>
-            </motion.div>
-
-            {/* Trocado de lugar. */}
+            {/* Banner Teste Cognitivo - Só exibe se não fez há menos de 30 dias */}
+            {!hasRecentAssessment && (
+                <motion.div
+                    initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.1 }}
+                    className="glass-panel"
+                    style={{ padding: '20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: 'linear-gradient(135deg, var(--co-lavender) 0%, rgba(166,124,255, 0.15) 100%)', color: 'var(--co-text-dark)', cursor: 'pointer', border: '1px solid var(--co-accent)' }}
+                    onClick={() => navigate('/assessment')}
+                >
+                    <div>
+                        <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', color: 'var(--co-primary)' }}>Descubra seu Perfil Cognitivo</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem', opacity: 0.9 }}>Faça o teste rápido de 5 perguntas.</p>
+                    </div>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '20px', background: 'var(--co-white)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-accent)', boxShadow: '0 2px 8px rgba(166,124,255,0.2)' }}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+                    </div>
+                </motion.div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '40px' }}>
                 <h2 style={{ fontSize: '1.25rem' }}>Ações Rápidas</h2>
