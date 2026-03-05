@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Wind, Hand, Phone, X, ShieldAlert } from 'lucide-react';
+import { Wind, Hand, Phone, X, ShieldAlert, MessageCircle } from 'lucide-react';
 
 export function EmergencyHub() {
     const navigate = useNavigate();
@@ -70,14 +70,26 @@ export function EmergencyHub() {
                         <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '20px' }}>
                             O Centro de Valorização da Vida (CVV) realiza apoio emocional preventivo atendendo voluntária e gratuitamente sob total sigilo.
                         </p>
-                        <a
-                            href="tel:188"
-                            className="btn-primary"
-                            style={{ display: 'flex', width: '100%', padding: '16px', borderRadius: '20px', background: 'var(--co-text-dark)', color: 'white', alignItems: 'center', justifyContent: 'center', gap: '12px', textDecoration: 'none' }}
-                        >
-                            <Phone size={20} />
-                            <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>Ligar para 188 (24h)</span>
-                        </a>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                            <a
+                                href="tel:188"
+                                className="btn-primary"
+                                style={{ display: 'flex', width: '100%', padding: '16px', borderRadius: '20px', background: 'var(--co-text-dark)', color: 'white', alignItems: 'center', justifyContent: 'center', gap: '12px', textDecoration: 'none' }}
+                            >
+                                <Phone size={20} />
+                                <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>Ligar para 188 (24h)</span>
+                            </a>
+                            <a
+                                href="https://cvv.org.br/chat/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn-secondary"
+                                style={{ display: 'flex', width: '100%', padding: '16px', borderRadius: '20px', alignItems: 'center', justifyContent: 'center', gap: '12px', textDecoration: 'none' }}
+                            >
+                                <MessageCircle size={20} />
+                                <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>Acessar Chat Online</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
