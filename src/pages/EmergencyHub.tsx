@@ -6,7 +6,7 @@ export function EmergencyHub() {
     const navigate = useNavigate();
 
     return (
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', padding: '24px', background: 'var(--co-background)' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '24px 24px 100px 24px', background: 'var(--co-background)' }}>
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
                 <button
                     className="btn-secondary"
