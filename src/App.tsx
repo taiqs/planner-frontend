@@ -15,9 +15,10 @@ import { Calendar } from './pages/Calendar';
 import { DayDetail } from './pages/DayDetail';
 import { VaultList } from './pages/VaultList';
 import { Planner } from './pages/Planner';
-import { EmergencyChat } from './pages/EmergencyChat';
+import { EmergencyHub } from './pages/EmergencyHub';
 import { UserProfile } from './pages/UserProfile';
 import { Breathe } from './pages/Breathe';
+import { Grounding } from './pages/Grounding';
 import { Blog } from './pages/Blog';
 import { AssessmentQuiz } from './pages/AssessmentQuiz';
 import { NeuroEvalInfo } from './pages/NeuroEvalInfo';
@@ -64,8 +65,9 @@ function App() {
           <Route path="/calendario" element={<Calendar />} />
           <Route path="/cofre" element={<VaultList />} />
           <Route path="/dia/:diaId" element={<DayDetail />} />
-          <Route path="/emergencia" element={<EmergencyChat />} />
+          <Route path="/emergencia" element={<EmergencyHub />} />
           <Route path="/breathe" element={<Breathe />} />
+          <Route path="/grounding" element={<Grounding />} />
           <Route path="/perfil" element={<UserProfile />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/assessment" element={<AssessmentQuiz />} />

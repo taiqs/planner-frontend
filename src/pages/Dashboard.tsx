@@ -416,7 +416,7 @@ export function Dashboard() {
                     <motion.div
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        onClick={() => navigate('/breathe')}
+                        onClick={() => navigate('/emergencia')}
                         style={{
                             width: '100%', padding: '20px', borderRadius: '24px', background: 'linear-gradient(135deg, #FFCDD2 0%, #E57373 100%)',
                             border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', boxShadow: '0 8px 16px rgba(229, 115, 115, 0.4)'

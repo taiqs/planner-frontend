@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MessageCircleWarning, HeartPulse } from 'lucide-react';
-import toast from 'react-hot-toast';
+import { X, HeartPulse } from 'lucide-react';
 
 export function Breathe() {
     const navigate = useNavigate();
@@ -147,17 +146,12 @@ export function Breathe() {
             </div>
 
             <div style={{ marginTop: 'auto', textAlign: 'center' }}>
-                <p className="text-muted" style={{ marginBottom: '16px', fontSize: '0.9rem' }}>Ainda não se sente melhor?</p>
                 <button
                     className="btn-primary"
-                    style={{ width: '100%', padding: '16px', borderRadius: '24px', background: 'var(--co-danger)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
-                    onClick={() => {
-                        toast('Conectando ao canal seguro...', { icon: '🔒' });
-                        setTimeout(() => navigate('/emergencia'), 800);
-                    }}
+                    style={{ width: '100%', padding: '16px', borderRadius: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '12px' }}
+                    onClick={() => navigate('/dashboard')}
                 >
-                    <MessageCircleWarning size={20} color="var(--co-danger-text)" />
-                    <span style={{ color: 'var(--co-danger-text)', fontWeight: 600, fontSize: '1.05rem' }}>Abrir Chat de Emergência</span>
+                    <span style={{ fontWeight: 600, fontSize: '1.05rem' }}>Concluir Exercício</span>
                 </button>
             </div>
         </div>
