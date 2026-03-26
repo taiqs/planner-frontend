@@ -172,22 +172,21 @@ export function Dashboard() {
                 </div>
             </header>
 
-            {/* Banner Instalar App (PWA) - Agora aparece também para iOS se não estiver instalado */}
             {(isInstallable || (isIOS && !isInstalled)) && (
                 <motion.div
                     initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
-                    className="glass-panel"
                     style={{ 
-                        padding: '16px', 
+                        padding: '18px 20px', 
                         display: 'flex', 
                         alignItems: 'center', 
                         justifyContent: 'space-between', 
                         marginBottom: '24px', 
-                        background: 'linear-gradient(135deg, var(--co-accent) 0%, var(--co-primary) 100%)', 
-                        color: 'var(--co-white)', 
+                        background: 'linear-gradient(135deg, #a67cff 0%, #8a5cf5 100%)', 
+                        color: 'white', 
                         cursor: 'pointer', 
-                        border: 'none',
-                        boxShadow: '0 8px 16px rgba(166,124,255,0.2)'
+                        borderRadius: '24px',
+                        boxShadow: '0 8px 16px rgba(166,124,255,0.4)',
+                        border: '1px solid rgba(255,255,255,0.1)'
                     }}
                     onClick={() => isIOS ? setShowIOSModal(true) : installApp()}
                 >
