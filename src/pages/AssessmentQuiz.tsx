@@ -220,7 +220,7 @@ export function AssessmentQuiz() {
                     </div>
                     <h1 style={{ fontSize: '2rem', color: 'var(--co-primary)', marginBottom: '16px' }}>Perfil Cognitivo e Personalidade</h1>
                     <p className="text-muted" style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '40px' }}>
-                        Um questionário atualizado para mapear seu funcionamento no dia a dia, motivação e reações sociais.
+                        Um questionário interativo de 8 perguntas para ajudar a mapear como sua mente organiza informações, lida com distrações e constrói foco no dia a dia.
                     </p>
                     <button className="btn-primary" style={{ padding: '16px 32px', borderRadius: '24px', fontSize: '1.1rem', display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--co-accent)', color: 'white', border: 'none' }} onClick={handleStart}>
                         Começar Avaliação <ArrowRight size={20} />
