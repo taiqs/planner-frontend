@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { ArrowRight, Heart, Brain, Clock, ShieldCheck, Star } from 'lucide-react';
 import logo from '../assets/logopontoevirgula.png';
+import { SEO } from '../components/SEO';
 
 export function Landing() {
     const navigate = useNavigate();
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--co-primary-bg)', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
+            <SEO />
             {/* Navbar Refatorada */}
             <header 
                 className="header-mobile"

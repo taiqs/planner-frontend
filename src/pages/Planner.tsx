@@ -4,6 +4,7 @@ import { ChevronRight, Loader2, PenTool, List, Mic } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { VoiceRecorder } from '../components/VoiceRecorder';
+import { SEO } from '../components/SEO';
 
 export function Planner() {
     const navigate = useNavigate();
@@ -86,6 +87,7 @@ export function Planner() {
 
     return (
         <div className="container" style={{ display: 'flex', flexDirection: 'column', height: '100vh', paddingBottom: '90px' }}>
+            <SEO title="Nova Reflexão" description="Registre seus pensamentos, áudios e reflexões guiadas para sua próxima sessão." />
             <header style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px', paddingTop: '16px' }}>
                 <button className="btn-secondary" style={{ padding: '10px 14px', borderRadius: '16px' }} onClick={() => navigate('/dashboard')}>
                     <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />

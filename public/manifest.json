@@ -1,21 +1,23 @@
 {
-    "short_name": "Planner",
-    "name": "Planner Psicanálise",
+    "short_name": "Ponto e Vírgula",
+    "name": "Ponto e Vírgula - Planner de Psicanálise",
+    "description": "Organize seus pensamentos e acelere seu progresso terapêutico.",
     "icons": [
         {
-            "src": "/vite.svg",
-            "type": "image/svg+xml",
+            "src": "/pwa-icon.png",
+            "type": "image/png",
             "sizes": "192x192"
         },
         {
-            "src": "/vite.svg",
-            "type": "image/svg+xml",
+            "src": "/pwa-icon.png",
+            "type": "image/png",
             "sizes": "512x512"
         }
     ],
     "start_url": "/",
-    "background_color": "#F3E5F5",
+    "background_color": "#FDFCFE",
     "display": "standalone",
+    "orientation": "portrait",
     "scope": "/",
     "theme_color": "#A67CFF"
 }

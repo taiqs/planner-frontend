@@ -5,6 +5,7 @@ import { LockKeyhole, Loader2, Plus, Play, Pause } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { VaultPinModal } from '../components/VaultPinModal';
+import { SEO } from '../components/SEO';
 
 export function VaultList() {
     const navigate = useNavigate();
@@ -78,6 +79,7 @@ export function VaultList() {
 
     return (
         <div className="container" style={{ paddingBottom: '100px' }}>
+            <SEO title="Cofre de Reflexões" description="Seu espaço seguro e criptografado para guardar pensamentos e áudios importantes." />
             <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', paddingTop: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '24px', background: 'var(--co-lavender)', color: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>

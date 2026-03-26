@@ -8,6 +8,7 @@ import api from '../services/api';
 import toast from 'react-hot-toast';
 import { sendPushNotification } from '../utils/notifications';
 import { generateTherapyReport } from '../utils/ReportGenerator';
+import { SEO } from '../components/SEO';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -147,6 +148,7 @@ export function Dashboard() {
 
     return (
         <div className="container" style={{ paddingBottom: '100px' }}>
+            <SEO title="Painel de Controle" />
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', paddingTop: '16px' }}>
                 <div>
                     <h1 style={{ fontSize: '1.5rem' }}>Olá, {userName}</h1>

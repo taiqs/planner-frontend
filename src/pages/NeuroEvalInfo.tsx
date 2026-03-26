@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ChevronRight, Brain, Search, Map, FileStack, ArrowRight } from 'lucide-react';
+import { SEO } from '../components/SEO';
 
 export function NeuroEvalInfo() {
     const navigate = useNavigate();
 
     return (
         <div className="container" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', padding: '24px', paddingBottom: '100px' }}>
+            <SEO title="Avaliação Neuropsicológica" description="Entenda como funciona o diagnóstico de TDAH, Autismo e Altas Habilidades com a Dra. Tailiny." />
             <header style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px', paddingTop: '16px' }}>
                 <button
                     className="btn-secondary"

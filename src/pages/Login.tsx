@@ -5,6 +5,7 @@ import { Mail, Lock, User, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import logo from '../assets/logopontoevirgula.png';
+import { SEO } from '../components/SEO';
 
 export function Login() {
     const navigate = useNavigate();
@@ -72,6 +73,10 @@ export function Login() {
 
     return (
         <div className="container" style={{ justifyContent: 'center' }}>
+            <SEO 
+                title={isRegister ? "Criar Conta" : "Acessar Conta"} 
+                description={isRegister ? "Crie sua conta no Ponto e Vírgula e comece a organizar sua jornada terapêutica hoje mesmo." : "Acesse seu espaço seguro para organizar suas sessões e reflexões."} 
+            />
             <motion.div
                 className="glass-panel"
                 style={{ padding: '32px', textAlign: 'center' }}

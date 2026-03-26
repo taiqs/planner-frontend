@@ -31,13 +31,16 @@ import { PsychologistAgenda } from './pages/psychologist/PsychologistAgenda';
 import { PsychologistBlog } from './pages/psychologist/PsychologistBlog';
 import { PsychologistAssessments } from './pages/psychologist/PsychologistAssessments';
 
+import { HelmetProvider } from 'react-helmet-async';
+
 function App() {
   useEffect(() => {
     requestNotificationPermission();
   }, []);
 
   return (
-    <Router>
+    <HelmetProvider>
+      <Router>
       <div style={{ position: 'relative' }}>
         <Toaster position="top-center" toastOptions={{
           duration: 3000,
@@ -82,7 +85,8 @@ function App() {
         </Routes>
         <BottomNav />
       </div>
-    </Router>
+      </Router>
+    </HelmetProvider>
   );
 }
 
