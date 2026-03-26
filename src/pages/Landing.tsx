@@ -286,9 +286,9 @@ export function Landing() {
                             style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '40px' }}
                         >
                             {[
-                                { icon: <Heart size={32} />, title: 'Saúde Emocional', text: 'Identifique <strong style={{color:"var(--co-text-dark)"}}>padrões</strong> nas suas emoções diárias e entenda seus gatilhos positivos.', color: 'var(--co-action)' },
-                                { icon: <Clock size={32} />, title: 'Cofre de Reflexões', text: 'Anote o que quiser discutir na terapia e garanta sessões <strong style={{color:"var(--co-text-dark)"}}>muito mais produtivas</strong>.', color: '#9575CD' },
-                                { icon: <ShieldCheck size={32} />, title: 'Privacidade Total', text: 'Seus dados são <strong style={{color:"var(--co-text-dark)"}}>100% confidenciais</strong> e protegidos com criptografia e PIN.', color: '#81C784' }
+                                { icon: <Heart size={32} />, title: 'Saúde Emocional', text: <>Identifique <strong style={{color:"var(--co-text-dark)"}}>padrões</strong> nas suas emoções diárias e entenda seus gatilhos positivos.</>, color: 'var(--co-action)' },
+                                { icon: <Clock size={32} />, title: 'Cofre de Reflexões', text: <>Anote o que quiser discutir na terapia e garanta sessões <strong style={{color:"var(--co-text-dark)"}}>muito mais produtivas</strong>.</>, color: '#9575CD' },
+                                { icon: <ShieldCheck size={32} />, title: 'Privacidade Total', text: <>Seus dados são <strong style={{color:"var(--co-text-dark)"}}>100% confidenciais</strong> e protegidos com criptografia e PIN.</>, color: '#81C784' }
                             ].map((feature, idx) => (
                                 <div key={idx} style={{ padding: '48px 32px', background: 'var(--co-primary-bg)', borderRadius: '40px', transition: 'all 0.3s ease', border: '1px solid rgba(0,0,0,0.02)' }} className="hover-scale glass-card">
                                     <div style={{ width: '72px', height: '72px', borderRadius: '24px', background: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px', boxShadow: '0 8px 24px rgba(0,0,0,0.06)', color: feature.color }}>
