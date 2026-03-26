@@ -8,17 +8,17 @@ interface SEOProps {
   type?: string;
 }
 
-export function SEO({ 
-  title, 
-  description, 
-  image = '/og-image.png', 
+export function SEO({
+  title,
+  description,
+  image = '/og-image.png',
   url = window.location.href,
   type = 'website'
 }: SEOProps) {
   const siteName = "Ponto e Vírgula";
-  const siteTitle = "Ponto e Vírgula - Planner de Psicanálise & Bem-Estar";
+  const siteTitle = "Ponto e Vírgula - Diário Psicológico";
   const defaultDescription = "O Ponto e Vírgula é seu aliado na jornada terapêutica. Organize reflexões, registre áudios e prepare-se para suas sessões com a Dra. Tailiny.";
-  
+
   const fullTitle = title ? `${title} | ${siteName}` : siteTitle;
   const fullDescription = description || defaultDescription;
 
@@ -46,7 +46,7 @@ export function SEO({
       <meta property="twitter:title" content={fullTitle} />
       <meta property="twitter:description" content={fullDescription} />
       <meta property="twitter:image" content={image} />
-      
+
       {/* Canonical Link */}
       <link rel="canonical" href={url} />
     </Helmet>
