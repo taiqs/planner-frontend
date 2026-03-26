@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
-import { Plus, Image as ImageIcon, Send, LayoutTemplate, Loader2, X, Check } from 'lucide-react';
+import { Plus, Image as ImageIcon, Send, LayoutTemplate, Loader2, X } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { getProxyUrl } from '../../utils/fileProxy';
