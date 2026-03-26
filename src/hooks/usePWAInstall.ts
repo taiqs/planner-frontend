@@ -13,8 +13,14 @@ export function usePWAInstall() {
     const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
     const [isInstallable, setIsInstallable] = useState(false);
     const [isInstalled, setIsInstalled] = useState(false);
+    const [isIOS, setIsIOS] = useState(false);
 
     useEffect(() => {
+        // Verifica iOS
+        const userAgent = window.navigator.userAgent.toLowerCase();
+        const isIosDevice = /iphone|ipad|ipod/.test(userAgent);
+        setIsIOS(isIosDevice);
+
         // Verifica se já está rodando como app standalone (instalado)
         if (window.matchMedia('(display-mode: standalone)').matches || (window.navigator as any).standalone) {
             setIsInstalled(true);
@@ -62,5 +68,5 @@ export function usePWAInstall() {
         setDeferredPrompt(null);
     };
 
-    return { isInstallable, isInstalled, installApp };
+    return { isInstallable, isInstalled, isIOS, installApp };
 }

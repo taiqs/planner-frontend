@@ -34,7 +34,8 @@ export function Dashboard() {
     const [moodNotes, setMoodNotes] = useState('');
 
     // PWA Install Hook
-    const { isInstallable, installApp } = usePWAInstall();
+    const { isInstallable, isInstalled, isIOS, installApp } = usePWAInstall();
+    const [showIOSModal, setShowIOSModal] = useState(false);
     const [savingMood, setSavingMood] = useState(false);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
@@ -171,13 +172,24 @@ export function Dashboard() {
                 </div>
             </header>
 
-            {/* Banner Instalar App (PWA) */}
-            {isInstallable && (
+            {/* Banner Instalar App (PWA) - Agora aparece também para iOS se não estiver instalado */}
+            {(isInstallable || (isIOS && !isInstalled)) && (
                 <motion.div
                     initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}
                     className="glass-panel"
-                    style={{ padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px', background: 'var(--co-primary)', color: 'var(--co-white)', cursor: 'pointer', border: 'none' }}
-                    onClick={installApp}
+                    style={{ 
+                        padding: '16px', 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        marginBottom: '24px', 
+                        background: 'linear-gradient(135deg, var(--co-accent) 0%, var(--co-primary) 100%)', 
+                        color: 'var(--co-white)', 
+                        cursor: 'pointer', 
+                        border: 'none',
+                        boxShadow: '0 8px 16px rgba(166,124,255,0.2)'
+                    }}
+                    onClick={() => isIOS ? setShowIOSModal(true) : installApp()}
                 >
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'rgba(255,255,255,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -185,9 +197,12 @@ export function Dashboard() {
                         </div>
                         <div>
                             <h3 style={{ fontSize: '1.05rem', marginBottom: '2px', color: 'var(--co-white)' }}>Instalar Aplicativo</h3>
-                            <p style={{ fontSize: '0.85rem', opacity: 0.9, color: 'var(--co-white)' }}>Transforme em um ícone no seu celular</p>
+                            <p style={{ fontSize: '0.85rem', opacity: 0.9, color: 'var(--co-white)' }}>
+                                {isIOS ? 'Saiba como adicionar à tela inicial' : 'Transforme em um ícone no seu celular'}
+                            </p>
                         </div>
                     </div>
+                    <ChevronRight size={20} color="white" />
                 </motion.div>
             )}
 
@@ -513,7 +528,59 @@ export function Dashboard() {
                         </motion.div>
                     </motion.div>
                 )}
+                {showIOSModal && (
+                    <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                        style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 110, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}
+                        onClick={() => setShowIOSModal(false)}
+                    >
+                        <motion.div
+                            initial={{ y: '100%' }} animate={{ y: 0 }} exit={{ y: '100%' }} transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                            style={{ background: 'var(--co-white)', width: '100%', maxWidth: '600px', borderTopLeftRadius: '24px', borderTopRightRadius: '24px', padding: '32px 24px', position: 'relative' }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <button
+                                style={{ position: 'absolute', top: '16px', right: '16px', background: 'var(--co-white)', border: 'none', width: '40px', height: '40px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', cursor: 'pointer' }}
+                                onClick={() => setShowIOSModal(false)}
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+                                <div style={{ width: '64px', height: '64px', borderRadius: '32px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
+                                    <Download size={32} color="var(--co-accent)" />
+                                </div>
+                                <h2 style={{ fontSize: '1.5rem', marginBottom: '8px' }}>Instalar no iPhone / iPad</h2>
+                                <p className="text-muted">No iOS, a instalação é manual através do Safari.</p>
+                            </div>
+
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', marginBottom: '32px' }}>
+                                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '18px', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>1</div>
+                                    <p style={{ fontSize: '1rem' }}>No Safari, clique no ícone de <strong>Compartilhar</strong> (o quadrado com uma seta para cima).</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '18px', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>2</div>
+                                    <p style={{ fontSize: '1rem' }}>Role a lista para baixo e toque em <strong>"Adicionar à Tela de Início"</strong>.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                                    <div style={{ width: '36px', height: '36px', borderRadius: '18px', background: '#F5F5F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>3</div>
+                                    <p style={{ fontSize: '1rem' }}>Toque em <strong>Adicionar</strong> no canto superior direito.</p>
+                                </div>
+                            </div>
+
+                            <button
+                                className="btn-primary"
+                                style={{ width: '100%', padding: '16px', borderRadius: '16px' }}
+                                onClick={() => setShowIOSModal(false)}
+                            >
+                                Entendi
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
             </AnimatePresence>
+
         </div>
     );
 }
