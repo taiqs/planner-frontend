@@ -23,6 +23,18 @@ export function Onboarding() {
         }
     }, []);
 
+    const maskPhone = (value: string) => {
+        return value
+            .replace(/\D/g, '')
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d)/, '$1-$2')
+            .replace(/(-\d{4})\d+?$/, '$1');
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPhone(maskPhone(e.target.value));
+    };
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsLoading(true);
@@ -111,7 +123,7 @@ export function Onboarding() {
                             className="input-field"
                             placeholder="(11) 99999-9999"
                             value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
+                            onChange={handlePhoneChange}
                             required
                         />
                     </div>

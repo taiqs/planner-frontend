@@ -18,6 +18,7 @@ export function UserProfile() {
     const [name, setName] = useState('');
     const [pronouns, setPronouns] = useState('');
     const [birthDate, setBirthDate] = useState('');
+    const [phone, setPhone] = useState('');
     const [avatarUrl, setAvatarUrl] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -37,6 +38,7 @@ export function UserProfile() {
                 setName(data.name || '');
                 setPronouns(data.pronouns || 'Ela/Dela');
                 setAvatarUrl(data.avatarUrl || '');
+                setPhone(data.phone || '');
 
                 if (data.birthDate) {
                     const dateObj = new Date(data.birthDate);
@@ -60,6 +62,18 @@ export function UserProfile() {
         }
     }, [searchParams]);
 
+    const maskPhone = (value: string) => {
+        return value
+            .replace(/\D/g, '')
+            .replace(/(\d{2})(\d)/, '($1) $2')
+            .replace(/(\d{5})(\d)/, '$1-$2')
+            .replace(/(-\d{4})\d+?$/, '$1');
+    };
+
+    const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPhone(maskPhone(e.target.value));
+    };
+
     const handleSave = async () => {
         setIsSaving(true);
         try {
@@ -67,7 +81,8 @@ export function UserProfile() {
                 name,
                 pronouns,
                 birthDate: birthDate ? birthDate : undefined,
-                avatarUrl
+                avatarUrl,
+                phone
             };
             const res = await api.put('/user/profile', payload);
             setUser(res.data);
@@ -213,6 +228,10 @@ export function UserProfile() {
                         <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Data de Nascimento</label>
                         <input type="date" className="input-field" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
                     </div>
+                    <div>
+                        <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Telefone (WhatsApp)</label>
+                        <input type="tel" className="input-field" value={phone} onChange={handlePhoneChange} placeholder="(11) 99999-9999" />
+                    </div>
                     <button
                         className="btn-primary"
                         style={{ marginTop: '16px', padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center' }}
@@ -251,7 +270,6 @@ export function UserProfile() {
                 </div>
             </div>
 
-            {/* Security Section */}
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
