@@ -226,51 +226,74 @@ export function UserProfile() {
                     <h2 style={{ fontSize: '1.15rem' }}>Segurança da Conta</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div style={{ position: 'relative' }}>
-                        <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Senha Atual</label>
-                        <input
-                            type={showPasswords ? "text" : "password"}
-                            className="input-field"
-                            placeholder="Sua senha atual"
-                            style={{ paddingRight: '48px' }}
-                            value={currentPassword}
-                            onChange={(e) => setCurrentPassword(e.target.value)}
-                        />
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                    {/* Password Section */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Alterar Senha de Acesso</h3>
+                        <div style={{ position: 'relative' }}>
+                            <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Senha Atual</label>
+                            <input
+                                type={showPasswords ? "text" : "password"}
+                                className="input-field"
+                                placeholder="Sua senha atual"
+                                style={{ paddingRight: '48px' }}
+                                value={currentPassword}
+                                onChange={(e) => setCurrentPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswords(!showPasswords)}
+                                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
+                            >
+                                {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
+                        <div style={{ position: 'relative' }}>
+                            <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Nova Senha</label>
+                            <input
+                                type={showPasswords ? "text" : "password"}
+                                className="input-field"
+                                placeholder="Uma nova senha forte"
+                                style={{ paddingRight: '48px' }}
+                                value={newPassword}
+                                onChange={(e) => setNewPassword(e.target.value)}
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPasswords(!showPasswords)}
+                                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
+                            >
+                                {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
+                            </button>
+                        </div>
                         <button
-                            type="button"
-                            onClick={() => setShowPasswords(!showPasswords)}
-                            style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
+                            className="btn-secondary"
+                            style={{ padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center', background: 'transparent', border: '1px solid var(--co-accent)', color: 'var(--co-accent)' }}
+                            onClick={handleChangePassword}
+                            disabled={isChangingPassword}
                         >
-                            {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {isChangingPassword ? <Loader2 size={20} className="animate-spin" /> : 'Alterar Senha'}
                         </button>
                     </div>
-                    <div style={{ position: 'relative' }}>
-                        <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Nova Senha</label>
-                        <input
-                            type={showPasswords ? "text" : "password"}
-                            className="input-field"
-                            placeholder="Uma nova senha forte"
-                            style={{ paddingRight: '48px' }}
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                        />
+
+                    <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
+
+                    {/* Vault PIN Section */}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Senha do Cofre (PIN de 4 dígitos)</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>
+                            {user?.vaultPin ? 'Você já possui um PIN configurado para o cofre.' : 'Proteja suas reflexões com uma senha numérica exclusiva.'}
+                        </p>
                         <button
-                            type="button"
-                            onClick={() => setShowPasswords(!showPasswords)}
-                            style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
+                            className="btn-secondary"
+                            style={{ padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center', background: 'var(--co-lavender)', border: 'none', color: 'var(--co-accent)', fontWeight: 600 }}
+                            onClick={() => {
+                                navigate('/cofre');
+                            }}
                         >
-                            {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
+                            {user?.vaultPin ? 'Alterar PIN do Cofre' : 'Configurar PIN do Cofre'}
                         </button>
                     </div>
-                    <button
-                        className="btn-secondary"
-                        style={{ marginTop: '8px', padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center', background: 'transparent', border: '1px solid var(--co-accent)', color: 'var(--co-accent)' }}
-                        onClick={handleChangePassword}
-                        disabled={isChangingPassword}
-                    >
-                        {isChangingPassword ? <Loader2 size={20} className="animate-spin" /> : 'Alterar Senha'}
-                    </button>
                 </div>
             </div>
 

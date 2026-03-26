@@ -42,7 +42,7 @@ export function NeuroEvalInfo() {
                         <div>
                             <h4 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '8px' }}>1. Entrevista de Anamnese</h4>
                             <p style={{ color: 'var(--co-text-muted)', fontSize: '0.95rem', lineHeight: 1.5 }}>
-                                Um encontro detalhado (com você e muitas vezes um familiar) para entender o seu histórico de vida, infância, dificuldades atuais e desenvolvimento.
+                                Uma sessão individual detalhada para entender o seu histórico de vida, infância, dificuldades atuais, relacionamentos e desenvolvimento.
                             </p>
                         </div>
                     </div>
@@ -82,7 +82,7 @@ export function NeuroEvalInfo() {
                     <button
                         className="btn-primary"
                         style={{ width: '100%', padding: '16px', borderRadius: '16px', background: '#25D366', color: 'white', display: 'flex', justifyContent: 'center', gap: '8px' }}
-                        onClick={() => window.open('https://wa.me/', '_blank')}
+                        onClick={() => window.open('https://wa.me/5511986641625?text=Olá!%20Gostaria%20de%20tirar%20dúvidas%20sobre%20a%20Avaliação%20Neuropsicológica%20e%20ver%20os%20valores.', '_blank')}
                     >
                         Tirar Dúvidas e Ver Valores no WhatsApp <ArrowRight size={20} />
                     </button>

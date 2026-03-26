@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles, Brain } from 'lucide-react';
+import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles, Brain, FileText } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import api from '../services/api';
 import toast from 'react-hot-toast';
 import { sendPushNotification } from '../utils/notifications';
+import { generateTherapyReport } from '../utils/ReportGenerator';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -19,7 +20,6 @@ export function Dashboard() {
     const [hasPsychologist, setHasPsychologist] = useState(false);
     const [interestedInTherapy, setInterestedInTherapy] = useState(false);
     const [showPlansModal, setShowPlansModal] = useState(false);
-    const [isUpdatingInterest, setIsUpdatingInterest] = useState(false);
     const [nextAppointment, setNextAppointment] = useState<any>(null);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [hasRecentAssessment, setHasRecentAssessment] = useState(false);
@@ -34,15 +34,29 @@ export function Dashboard() {
     // PWA Install Hook
     const { isInstallable, installApp } = usePWAInstall();
     const [savingMood, setSavingMood] = useState(false);
+    const [isGeneratingReport, setIsGeneratingReport] = useState(false);
 
     useEffect(() => {
         loadDashboardData();
     }, []);
 
+    const handleExportReport = async () => {
+        setIsGeneratingReport(true);
+        try {
+            const { data } = await api.get('/mood/report');
+            generateTherapyReport(data, userName);
+            toast.success("Relatório gerado com sucesso!");
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao gerar relatório.");
+        } finally {
+            setIsGeneratingReport(false);
+        }
+    };
+
     const loadDashboardData = async () => {
         setIsLoadingData(true);
         try {
-            // Promise.all para puxar dados em paralelo
             const [profileRes, streakRes, aptsRes] = await Promise.all([
                 api.get('/user/me'),
                 api.get('/mood/streak'),
@@ -50,7 +64,7 @@ export function Dashboard() {
             ]);
 
             const user = profileRes.data;
-            setUserName(user.name?.split(' ')[0] || 'Paciente'); // Primeiro Nome
+            setUserName(user.name?.split(' ')[0] || 'Paciente');
             setUserInitial(user.name?.charAt(0).toUpperCase() || 'P');
             setEmergencyEnabled(user.emergencyEnabled);
             setHasPsychologist(!!user.psychologistId);
@@ -64,11 +78,10 @@ export function Dashboard() {
                 setHasRecentAssessment(Date.now() - lastDate < thirtyDaysInMs);
             }
 
-            const scheduled = aptsRes.data.filter((a: any) => a.status === 'SCHEDULED' && new Date(a.date).getTime() >= new Date().getTime() - 3600000); // Tira as que passaram muito, mas mantém a próxima mais de 1 hr de erro
+            const scheduled = aptsRes.data.filter((a: any) => a.status === 'SCHEDULED' && new Date(a.date).getTime() >= new Date().getTime() - 3600000);
             const nextApt = scheduled.sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime())[0];
             setNextAppointment(nextApt || null);
 
-            // Push Notification: Lembrete de Sessão
             if (nextApt) {
                 const aptDate = new Date(nextApt.date);
                 const isToday = aptDate.toDateString() === new Date().toDateString();
@@ -80,7 +93,6 @@ export function Dashboard() {
                 }
             }
 
-            // Push Notification: Como você está? (Streaks)
             const streakVal = streakRes.data.streak || 0;
             if (streakVal > 0) {
                 const lastNotifiedMood = localStorage.getItem('push_mood');
@@ -90,44 +102,15 @@ export function Dashboard() {
                 }
             }
 
-            // Salvar no localstorage atualizado
             localStorage.setItem('user', JSON.stringify(user));
         } catch (error) {
             console.error('Erro ao carregar dashboard', error);
-            // Se der erro de token implícito/inválido
         } finally {
             setIsLoadingData(false);
         }
     };
 
     // Handlers do fluxo
-    const handleToggleInterest = async () => {
-        setIsUpdatingInterest(true);
-        try {
-            const newStatus = !interestedInTherapy;
-            await api.put('/user/interest', { interested: newStatus });
-            setInterestedInTherapy(newStatus);
-            if (newStatus) {
-                toast.success("Interesse registrado! Em breve a psicóloga entrará em contato.");
-                setShowPlansModal(false);
-            } else {
-                toast.success("Interesse removido.");
-            }
-
-            // Atualiza cache local
-            const userStr = localStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                user.interestedInTherapy = newStatus;
-                localStorage.setItem('user', JSON.stringify(user));
-            }
-        } catch (error) {
-            toast.error("Erro ao atualizar interesse.");
-        } finally {
-            setIsUpdatingInterest(false);
-        }
-    }
-
     const handleMainMoodSelect = (moodKey: string) => {
         setSelectedMainMood(moodKey);
         setSelectedSubEmotion(null);
@@ -367,6 +350,16 @@ export function Dashboard() {
                     </div>
                 )}
 
+                <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', background: 'var(--co-white)' }} onClick={handleExportReport}>
+                    <div style={{ background: 'var(--co-lavender)', width: '48px', height: '48px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        {isGeneratingReport ? <Loader2 size={24} className="animate-spin" color="var(--co-accent)" /> : <FileText size={24} color="var(--co-text-dark)" />}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Gerar Relatório de Terapia</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Resumo dos últimos 14 dias p/ psicóloga</p>
+                    </div>
+                </div>
+
                 <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/avaliacao-neuropsicologica')}>
                     <div style={{ background: 'var(--co-lavender)', padding: '12px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Brain size={24} color="var(--co-text-dark)" />
@@ -458,53 +451,57 @@ export function Dashboard() {
                                 <div style={{ width: '64px', height: '64px', borderRadius: '32px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px' }}>
                                     <Sparkles size={32} color="var(--co-accent)" />
                                 </div>
-                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Evolua com a Terapia</h2>
-                                <p className="text-muted">Acompanhamento psicológico profissional focado no seu bem-estar e desenvolvimento pessoal.</p>
+                                <h2 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Ponto e Vírgula: Terapia</h2>
+                                <p className="text-muted">Um espaço seguro para sua jornada de autoconhecimento e saúde mental.</p>
                             </div>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '32px' }}>
-                                <div className="glass-card" style={{ padding: '24px', border: '2px solid var(--co-accent)', position: 'relative' }}>
-                                    <div style={{ position: 'absolute', top: '-12px', right: '24px', background: 'var(--co-accent)', color: '#fff', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', fontWeight: 'bold' }}>
-                                        Mais Escolhido
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '40px' }}>
+                                <h3 style={{ fontSize: '1.1rem', color: 'var(--co-text-dark)', marginBottom: '-8px' }}>Como funciona?</h3>
+
+                                <div style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <MessageSquare size={20} color="var(--co-accent)" />
                                     </div>
-                                    <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>Sessões Semanais</h3>
-                                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '16px' }}>Ideal para um acompanhamento contínuo e aprofundado.</p>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--co-primary)', marginBottom: '16px' }}>
-                                        R$ 150 <span style={{ fontSize: '1rem', color: 'var(--co-text-dark)', fontWeight: 400 }}>/ sessão</span>
+                                    <div>
+                                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Sessões Acolhedoras</h4>
+                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Encontros semanais de 50 minutos focados nas suas necessidades e objetivos emocionais.</p>
                                     </div>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> 4 sessões mensais (50 min)</li>
-                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Acesso ao Botão de Emergência</li>
-                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Materiais exclusivos e exercícios</li>
-                                    </ul>
                                 </div>
 
-                                <div className="glass-card" style={{ padding: '24px' }}>
-                                    <h3 style={{ fontSize: '1.3rem', marginBottom: '8px' }}>Sessões Quinzenais</h3>
-                                    <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '16px' }}>Para manutenção e acompanhamento pontual.</p>
-                                    <div style={{ fontSize: '1.8rem', fontWeight: 700, color: 'var(--co-primary)', marginBottom: '16px' }}>
-                                        R$ 180 <span style={{ fontSize: '1rem', color: 'var(--co-text-dark)', fontWeight: 400 }}>/ sessão</span>
+                                <div style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <MessageSquare size={20} color="var(--co-accent)" />
                                     </div>
-                                    <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> 2 sessões mensais (50 min)</li>
-                                        <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.9rem' }}><Check size={16} color="var(--co-accent)" /> Suporte via chat em horário comercial</li>
-                                    </ul>
+                                    <div>
+                                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Conteúdos Postados</h4>
+                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Suas notas e áudios servem como um guia para que você tenha sempre em mãos o que falar no dia da sessão.</p>
+                                    </div>
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '16px' }}>
+                                    <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                        <Check size={20} color="var(--co-accent)" />
+                                    </div>
+                                    <div>
+                                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Ambiente Seguro</h4>
+                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Sigilo total e acolhimento profissional, com ferramentas para te apoiar entre os atendimentos.</p>
+                                    </div>
                                 </div>
                             </div>
 
-                            <button
+                            <a
+                                href={`https://wa.me/5511999999999?text=${encodeURIComponent("Olá Dra. Tailiny, gostaria de saber mais sobre as sessões de terapia.")}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 className="btn-primary"
-                                style={{ width: '100%', padding: '16px', borderRadius: '16px', fontSize: '1.1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}
-                                onClick={handleToggleInterest}
-                                disabled={isUpdatingInterest}
+                                style={{ width: '100%', padding: '16px', borderRadius: '16px', fontSize: '1.1rem', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', textDecoration: 'none' }}
+                                onClick={() => setShowPlansModal(false)}
                             >
-                                {isUpdatingInterest ? <Loader2 className="animate-spin" size={24} /> : interestedInTherapy ? 'Cancelar Interesse' : 'Quero Iniciar a Terapia!'}
-                            </button>
-                            {!interestedInTherapy && (
-                                <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--co-text-dark)', marginTop: '16px', opacity: 0.8 }}>
-                                    Ao clicar acima, a dra. Tailiny entrará em contato com você pelo WhatsApp para agendar a primeira conversa.
-                                </p>
-                            )}
+                                Agendar Conversa Inicial
+                            </a>
+                            <p style={{ textAlign: 'center', fontSize: '0.85rem', color: 'var(--co-text-dark)', marginTop: '16px', opacity: 0.8 }}>
+                                Clique para tirar dúvidas e verificar valores no WhatsApp.
+                            </p>
                         </motion.div>
                     </motion.div>
                 )}

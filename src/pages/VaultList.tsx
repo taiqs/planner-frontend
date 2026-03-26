@@ -1,18 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { LockKeyhole, Loader2, Plus } from 'lucide-react';
+import { LockKeyhole, Loader2, Plus, Play, Pause } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { VaultPinModal } from '../components/VaultPinModal';
 
 export function VaultList() {
     const navigate = useNavigate();
     const [vaults, setVaults] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [isUnlocked, setIsUnlocked] = useState(false);
+    const [userHasPin, setUserHasPin] = useState(false);
+    const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+
+    // Audio Player State
+    const [playingId, setPlayingId] = useState<string | null>(null);
+    const audioRef = useRef<HTMLAudioElement | null>(null);
+
+    const handlePlayPause = (id: string, url: string) => {
+        if (playingId === id) {
+            audioRef.current?.pause();
+            setPlayingId(null);
+        } else {
+            if (audioRef.current) {
+                audioRef.current.src = url;
+                audioRef.current.play();
+                setPlayingId(id);
+            }
+        }
+    };
 
     useEffect(() => {
-        loadVaults();
+        checkPinStatus();
     }, []);
+
+    const checkPinStatus = async () => {
+        try {
+            const { data: user } = await api.get('/user/me');
+            setUserHasPin(!!user.vaultPin);
+            setIsPinModalOpen(true);
+        } catch (error) {
+            console.error(error);
+            setIsUnlocked(true); // Fallback em caso de erro no me
+        }
+    };
+
+    useEffect(() => {
+        if (isUnlocked) {
+            loadVaults();
+        }
+    }, [isUnlocked]);
 
     const loadVaults = async () => {
         setIsLoading(true);
@@ -25,6 +63,16 @@ export function VaultList() {
             toast.error("Erro ao carregar o cofre.");
         } finally {
             setIsLoading(false);
+        }
+    };
+
+    const togglePrivacy = async (id: string, currentStatus: boolean) => {
+        try {
+            await api.patch(`/vault/${id}/privacy`, { isPrivate: !currentStatus });
+            loadVaults();
+            toast.success(!currentStatus ? "Agora privado" : "Agora visível para a psicóloga");
+        } catch (error) {
+            toast.error("Erro ao alterar privacidade.");
         }
     };
 
@@ -69,12 +117,38 @@ export function VaultList() {
                                     <div><strong style={{ fontSize: '0.85rem', color: 'var(--co-text-muted)' }}>Emoção sentida:</strong><p style={{ fontSize: '0.95rem' }}>{vault.emotion}</p></div>
                                     <div><strong style={{ fontSize: '0.85rem', color: 'var(--co-text-muted)' }}>Como você reagiu:</strong><p style={{ fontSize: '0.95rem' }}>{vault.behavior}</p></div>
                                 </div>
-                            ) : (
+                            ) : vault.audioUrl ? (
+                                    <div style={{ background: 'var(--co-lavender)', padding: '16px', borderRadius: '16px', display: 'flex', alignItems: 'center', gap: '16px', marginTop: '8px' }}>
+                                        <button 
+                                            onClick={() => handlePlayPause(vault.id, vault.audioUrl)}
+                                            style={{ background: 'var(--co-action)', border: 'none', width: '44px', height: '44px', borderRadius: '22px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 10px rgba(149, 117, 205, 0.3)' }}
+                                        >
+                                            {playingId === vault.id ? <Pause size={20} color="white" /> : <Play size={20} color="white" style={{ marginLeft: '3px' }} />}
+                                        </button>
+                                        <div style={{ flex: 1 }}>
+                                            <p style={{ fontWeight: 700, fontSize: '0.9rem', marginBottom: '2px' }}>Nota de Voz</p>
+                                            <div style={{ height: '4px', background: 'rgba(0,0,0,0.05)', borderRadius: '2px', width: '100%', position: 'relative' }}>
+                                                <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: playingId === vault.id ? '100%' : '0%', background: 'var(--co-accent)', borderRadius: '2px', transition: playingId === vault.id ? 'width 10s linear' : 'none' }}></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
                                 <p style={{ fontSize: '1rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{vault.content}</p>
                             )}
+            <audio ref={audioRef} onEnded={() => setPlayingId(null)} style={{ display: 'none' }} />
 
-                            <span style={{ position: 'absolute', top: '24px', right: '24px', fontSize: '0.7rem', fontWeight: 600, color: vault.isPrivate ? 'var(--co-text-muted)' : 'var(--co-success-text)', background: vault.isPrivate ? 'rgba(0,0,0,0.05)' : '#E8F5E9', padding: '4px 8px', borderRadius: '8px' }}>
-                                {vault.isPrivate ? 'Privado' : 'Visível p/ Psicóloga'}
+                            <span 
+                                onClick={() => togglePrivacy(vault.id, vault.isPrivate)}
+                                style={{ 
+                                    position: 'absolute', top: '24px', right: '24px', fontSize: '0.68rem', fontWeight: 700, 
+                                    color: vault.isPrivate ? 'var(--co-text-muted)' : '#2E7D32', 
+                                    background: vault.isPrivate ? 'rgba(0,0,0,0.05)' : '#E8F5E9', 
+                                    padding: '5px 10px', borderRadius: '10px', cursor: 'pointer',
+                                    transition: 'all 0.2s ease', border: vault.isPrivate ? '1px solid transparent' : '1px solid #C8E6C9'
+                                }}
+                                title="Clique para alterar privacidade"
+                            >
+                                {vault.isPrivate ? 'Privado' : '✓ Liberado p/ Psicóloga'}
                             </span>
                         </motion.div>
                     ))}
@@ -106,6 +180,15 @@ export function VaultList() {
             >
                 <Plus size={32} />
             </motion.button>
+
+            <VaultPinModal
+                isOpen={isPinModalOpen}
+                userHasPin={userHasPin}
+                onSuccess={() => {
+                    setIsPinModalOpen(false);
+                    setIsUnlocked(true);
+                }}
+            />
         </div>
     );
 }

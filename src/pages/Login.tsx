@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { HeartPulse, Mail, Lock, User, ChevronRight, Eye, EyeOff } from 'lucide-react';
+import { Mail, Lock, User, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import logo from '../assets/logopontoevirgula.png';
 
 export function Login() {
     const navigate = useNavigate();
@@ -78,8 +79,11 @@ export function Login() {
                 animate={{ opacity: 1, y: 0 }}
             >
                 <div style={{ marginBottom: '32px' }}>
-                    <HeartPulse size={48} color="var(--co-accent-hover)" style={{ margin: '0 auto 16px' }} />
-                    <h1 style={{ fontSize: '1.8rem', marginBottom: '8px' }}>Planner Psico</h1>
+                    <img 
+                        src={logo} 
+                        alt="Ponto e Vírgula Logo" 
+                        style={{ height: '80px', margin: '0 auto 16px', display: 'block', objectFit: 'contain' }} 
+                    />
                     <p className="text-muted">{isRegister ? 'Crie sua conta e inicie sua jornada' : 'Seu espaço terapêutico'}</p>
                 </div>
 
@@ -110,7 +114,7 @@ export function Login() {
                                 style={{ accentColor: 'var(--co-accent)', width: '18px', height: '18px' }}
                             />
                             <label htmlFor="alreadyPatient" className="text-muted" style={{ fontSize: '0.9rem', cursor: 'pointer' }}>
-                                Já sou paciente da clínica
+                                Já sou paciente da Psicóloga Tailiny Quirino
                             </label>
                         </div>
                     )}

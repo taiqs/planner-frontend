@@ -1,21 +1,24 @@
 :root {
   --co-primary-bg: #FCF8FF;
-  /* Fundo mais quente */
   --co-serene-blue: #FFF8E1;
-  /* Amarelo muito suave (antigo serene-blue) */
   --co-lavender: #F3E5F5;
-  /* Roxo/Lavanda suave */
-  --co-text-dark: #37474F;
-  --co-text-muted: #7D6B91;
-  /* Roxo acinzentado */
+  --co-text-dark: #2D3436;
+  --co-text-muted: #636E72;
   --co-white: #FFFFFF;
-  --co-accent: #E1BEE7;
-  /* Roxo claro para destaques e botões */
-  --co-accent-hover: #CE93D8;
-  --co-action: #FFA770;
-  /* Soft, warm peach/coral for primary actions */
-  --co-danger: #FFCDD2;
+  --co-accent: #E1BEE7; /* Requested Soft Purple */
+  --co-accent-hover: #D1C4E9;
+  --co-action: #9575CD;
+  --co-yellow: #FFF176;
+  --co-yellow-soft: #FFF9C4;
+  --co-danger: #FFEBEE;
   --co-danger-text: #D32F2F;
+}
+
+/* Responsive typography hooks */
+:root {
+  --fs-h1: clamp(2rem, 8vw, 3.5rem);
+  --fs-h2: clamp(1.5rem, 5vw, 2.5rem);
+  --fs-p: clamp(1rem, 2vw, 1.25rem);
 }
 
 * {
@@ -43,7 +46,7 @@ h4,
 h5,
 h6 {
   font-family: 'Outfit', sans-serif;
-  font-weight: 600;
+  font-weight: 800;
   color: var(--co-text-dark);
 }
 
@@ -285,5 +288,57 @@ h6 {
     overflow-y: auto;
     background: var(--co-primary-bg);
     padding-bottom: 32px;
+  }
+}
+
+/* Landing Page Mobile Fixes */
+@media (max-width: 600px) {
+  .hero-title {
+    font-size: 2.2rem !important;
+    letter-spacing: -1px !important;
+    line-height: 1.1 !important;
+  }
+  
+  .header-mobile {
+    flex-direction: column !important;
+    gap: 16px !important;
+    padding: 24px 16px !important;
+    text-align: center !important;
+  }
+
+  .logo-mobile {
+    height: 70px !important;
+  }
+
+  .btn-container-mobile {
+    flex-direction: column !important;
+    width: 100% !important;
+    gap: 12px !important;
+  }
+
+  .btn-mobile-full {
+    width: 100% !important;
+    justify-content: center !important;
+    padding: 0 24px !important;
+    height: 54px !important;
+    font-size: 1rem !important;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .section-padding-mobile {
+    padding: 60px 20px !important;
+  }
+
+  .grid-mobile-1 {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+  
+  .mobile-center {
+    align-items: center !important;
+    text-align: center !important;
   }
 }
