@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Users, Calendar as CalendarIcon, LogOut, BookOpen, Brain, Bell, BellRing, Check, X } from 'lucide-react';
+import { Activity, Users, Calendar as CalendarIcon, LogOut, BookOpen, Brain, Bell, BellRing, Check, X, DollarSign } from 'lucide-react';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
 
@@ -154,6 +154,12 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
                     style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', background: activePath === '/psicologo/blog' ? 'var(--co-serene-blue)' : 'transparent', color: activePath === '/psicologo/blog' ? 'var(--co-text-dark)' : 'var(--co-text-muted)', fontWeight: activePath === '/psicologo/blog' ? 600 : 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
                 >
                     <BookOpen size={20} /> Publicações
+                </button>
+                <button
+                    onClick={() => navigate('/psicologo/financeiro')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', background: activePath === 'financeiro' ? 'var(--co-serene-blue)' : 'transparent', color: activePath === 'financeiro' ? 'var(--co-text-dark)' : 'var(--co-text-muted)', fontWeight: activePath === 'financeiro' ? 600 : 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
+                >
+                    <DollarSign size={20} /> Financeiro
                 </button>
             </nav>
 

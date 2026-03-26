@@ -1,19 +1,58 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
-import { Plus, Image, Send, LayoutTemplate, Loader2 } from 'lucide-react';
+import { Plus, Image as ImageIcon, Send, LayoutTemplate, Loader2, X, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { getProxyUrl } from '../../utils/fileProxy';
+
+const BLOG_TEMPLATES = [
+    {
+        name: 'Lorem Ipsum Padrão',
+        title: 'Entendendo a Ansiedade no Dia a Dia',
+        content: `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. 
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+Principais tópicos:
+1. Origem dos pensamentos intrusivos.
+2. Como a respiração diafragmática ajuda.
+3. Quando buscar ajuda profissional.
+
+Conclusão:
+A jornada de autoconhecimento é contínua e você não precisa percorrê-la sozinho.`
+    },
+    {
+        name: 'Dica de Bem-Estar',
+        title: '5 Minutos para Resetar sua Mente',
+        content: `Neste artigo, vamos explorar uma técnica rápida para momentos de estresse agudo.
+
+1. Pare tudo o que está fazendo.
+2. Observe 3 sons ao seu redor.
+3. Sinta 3 texturas diferentes (sua roupa, a mesa, suas mãos).
+4. Respire fundo 3 vezes.
+
+Esta prática simples de Mindfulness (atenção plena) ajuda a trazer sua consciência de volta para o presente, reduzindo o fluxo de preocupações futuras.`
+    }
+];
 
 export function PsychologistBlog() {
     const [isWriting, setIsWriting] = useState(false);
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [category, setCategory] = useState('Ansiedade');
+    const [customCategory, setCustomCategory] = useState('');
+    const [isAddingCustomCategory, setIsAddingCustomCategory] = useState(false);
+    const [imageUrl, setImageUrl] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+    const [showTemplates, setShowTemplates] = useState(false);
 
     const [articles, setArticles] = useState<any[]>([]);
     const [isLoadingArticles, setIsLoadingArticles] = useState(true);
     const [isPublishing, setIsPublishing] = useState(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const fetchArticles = async () => {
         setIsLoadingArticles(true);
@@ -32,19 +71,40 @@ export function PsychologistBlog() {
         fetchArticles();
     }, []);
 
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('file', file);
+
+        setIsUploading(true);
+        try {
+            const res = await api.post('/upload', formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            setImageUrl(res.data.url);
+            toast.success('Imagem de capa carregada!');
+        } catch (error) {
+            console.error(error);
+            toast.error('Erro ao fazer upload da imagem.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
     const handlePublish = async () => {
         setIsPublishing(true);
         try {
             await api.post('/blog', {
                 title,
                 content,
-                category,
-                imageUrl: 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80' // Mock Image
+                category: isAddingCustomCategory ? customCategory : category,
+                imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80'
             });
             toast.success('Artigo publicado no feed de todos os pacientes!');
             setIsWriting(false);
-            setTitle('');
-            setContent('');
+            resetForm();
             fetchArticles();
         } catch (error) {
             console.error(error);
@@ -52,6 +112,22 @@ export function PsychologistBlog() {
         } finally {
             setIsPublishing(false);
         }
+    };
+
+    const resetForm = () => {
+        setTitle('');
+        setContent('');
+        setCategory('Ansiedade');
+        setCustomCategory('');
+        setIsAddingCustomCategory(false);
+        setImageUrl('');
+    };
+
+    const applyTemplate = (template: typeof BLOG_TEMPLATES[0]) => {
+        setTitle(template.title);
+        setContent(template.content);
+        setShowTemplates(false);
+        toast.success(`Template "${template.name}" aplicado!`);
     };
 
     return (
@@ -80,6 +156,18 @@ export function PsychologistBlog() {
                 <div style={{ flex: 1, overflowY: 'auto', paddingBottom: '40px' }}>
                     {isWriting ? (
                         <div className="glass-card" style={{ maxWidth: '800px', margin: '0 auto', background: 'var(--co-white)' }}>
+                            {imageUrl && (
+                                <div style={{ width: '100%', height: '250px', position: 'relative', overflow: 'hidden', borderTopLeftRadius: '24px', borderTopRightRadius: '24px' }}>
+                                    <img src={getProxyUrl(imageUrl)} alt="Capa" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    <button 
+                                        onClick={() => setImageUrl('')}
+                                        style={{ position: 'absolute', top: '16px', right: '16px', background: 'rgba(0,0,0,0.5)', color: 'white', border: 'none', borderRadius: '50%', padding: '8px', cursor: 'pointer' }}
+                                    >
+                                        <X size={20} />
+                                    </button>
+                                </div>
+                            )}
+
                             <div style={{ padding: '32px', borderBottom: '1px solid rgba(0,0,0,0.05)' }}>
                                 <input
                                     type="text"
@@ -88,26 +176,81 @@ export function PsychologistBlog() {
                                     onChange={(e) => setTitle(e.target.value)}
                                     style={{ width: '100%', fontSize: '2rem', fontWeight: 700, border: 'none', outline: 'none', background: 'transparent', marginBottom: '16px' }}
                                 />
-                                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px' }}>
-                                    <select
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        style={{ padding: '8px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--co-lavender)', outline: 'none', fontSize: '0.9rem' }}
-                                    >
-                                        <option value="Ansiedade">Ansiedade</option>
-                                        <option value="Depressão">Depressão</option>
-                                        <option value="Relacionamentos">Relacionamentos</option>
-                                        <option value="Bem-estar">Bem-estar</option>
-                                        <option value="Informação">Informação</option>
-                                    </select>
+                                <div style={{ display: 'flex', gap: '16px', marginBottom: '16px', alignItems: 'center' }}>
+                                    {!isAddingCustomCategory ? (
+                                        <select
+                                            value={category}
+                                            onChange={(e) => {
+                                                if (e.target.value === 'ADD_NEW') {
+                                                    setIsAddingCustomCategory(true);
+                                                } else {
+                                                    setCategory(e.target.value);
+                                                }
+                                            }}
+                                            style={{ padding: '8px 16px', borderRadius: '12px', border: '1px solid rgba(0,0,0,0.1)', background: 'var(--co-lavender)', outline: 'none', fontSize: '0.9rem' }}
+                                        >
+                                            <option value="Ansiedade">Ansiedade</option>
+                                            <option value="Depressão">Depressão</option>
+                                            <option value="Relacionamentos">Relacionamentos</option>
+                                            <option value="Bem-estar">Bem-estar</option>
+                                            <option value="Informação">Informação</option>
+                                            <option value="ADD_NEW">+ Nova Categoria...</option>
+                                        </select>
+                                    ) : (
+                                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                            <input 
+                                                type="text" 
+                                                placeholder="Nome da categoria..."
+                                                value={customCategory}
+                                                onChange={(e) => setCustomCategory(e.target.value)}
+                                                style={{ padding: '8px 16px', borderRadius: '12px', border: '1px solid #ddd', outline: 'none', fontSize: '0.9rem' }}
+                                                autoFocus
+                                            />
+                                            <button onClick={() => setIsAddingCustomCategory(false)} className="text-muted"><X size={18} /></button>
+                                        </div>
+                                    )}
                                 </div>
-                                <div style={{ display: 'flex', gap: '16px' }}>
-                                    <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '12px', fontSize: '0.9rem' }}>
-                                        <Image size={16} /> Adicionar Capa
+                                <div style={{ display: 'flex', gap: '16px', position: 'relative' }}>
+                                    <input 
+                                        type="file" 
+                                        ref={fileInputRef} 
+                                        onChange={handleFileUpload} 
+                                        style={{ display: 'none' }} 
+                                        accept="image/*"
+                                    />
+                                    <button 
+                                        className="btn-secondary" 
+                                        onClick={() => fileInputRef.current?.click()}
+                                        disabled={isUploading}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '12px', fontSize: '0.9rem' }}
+                                    >
+                                        {isUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />} 
+                                        {imageUrl ? 'Trocar Capa' : 'Adicionar Capa'}
                                     </button>
-                                    <button className="btn-secondary" style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '12px', fontSize: '0.9rem' }}>
+                                    <button 
+                                        className="btn-secondary" 
+                                        onClick={() => setShowTemplates(!showTemplates)}
+                                        style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', borderRadius: '12px', fontSize: '0.9rem' }}
+                                    >
                                         <LayoutTemplate size={16} /> Templates
                                     </button>
+
+                                    {showTemplates && (
+                                        <div style={{ position: 'absolute', top: '48px', left: '160px', width: '240px', background: 'white', border: '1px solid #ddd', borderRadius: '12px', boxShadow: '0 8px 24px rgba(0,0,0,0.1)', zIndex: 10, padding: '8px' }}>
+                                            <p style={{ fontSize: '0.75rem', color: 'var(--co-text-muted)', padding: '8px', fontWeight: 600 }}>ESCOLHA UM MODELO</p>
+                                            {BLOG_TEMPLATES.map(t => (
+                                                <button 
+                                                    key={t.name}
+                                                    onClick={() => applyTemplate(t)}
+                                                    style={{ width: '100%', textAlign: 'left', padding: '10px 12px', background: 'none', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.9rem', transition: 'background 0.2s' }}
+                                                    onMouseOver={(e) => e.currentTarget.style.background = '#f5f5f5'}
+                                                    onMouseOut={(e) => e.currentTarget.style.background = 'none'}
+                                                >
+                                                    {t.name}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -121,7 +264,7 @@ export function PsychologistBlog() {
                             </div>
 
                             <div style={{ padding: '24px 32px', background: 'var(--co-primary-bg)', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <button className="btn-secondary" onClick={() => setIsWriting(false)}>Cancelar</button>
+                                <button className="btn-secondary" onClick={() => { setIsWriting(false); resetForm(); }}>Cancelar</button>
                                 <button
                                     className="btn-primary"
                                     style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 32px', opacity: !title || !content || isPublishing ? 0.5 : 1 }}

@@ -30,6 +30,7 @@ import { PsychologistPatientDetail } from './pages/psychologist/PsychologistPati
 import { PsychologistAgenda } from './pages/psychologist/PsychologistAgenda';
 import { PsychologistBlog } from './pages/psychologist/PsychologistBlog';
 import { PsychologistAssessments } from './pages/psychologist/PsychologistAssessments';
+import { PsychologistFinancial } from './pages/psychologist/PsychologistFinancial';
 
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -82,6 +83,7 @@ function App() {
           <Route path="/psicologo/agenda" element={<PsychologistAgenda />} />
           <Route path="/psicologo/blog" element={<PsychologistBlog />} />
           <Route path="/psicologo/avaliacoes" element={<PsychologistAssessments />} />
+          <Route path="/psicologo/financeiro" element={<PsychologistFinancial />} />
         </Routes>
         <BottomNav />
       </div>
