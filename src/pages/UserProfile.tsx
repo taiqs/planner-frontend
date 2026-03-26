@@ -1,16 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff, Calendar } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
 
 export function UserProfile() {
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
 
     // Form states
     const [name, setName] = useState('');
@@ -36,11 +38,9 @@ export function UserProfile() {
                 setPronouns(data.pronouns || 'Ela/Dela');
                 setAvatarUrl(data.avatarUrl || '');
 
-                // Formatar a data para o input type="date"
                 if (data.birthDate) {
                     const dateObj = new Date(data.birthDate);
-                    const formattedUrl = dateObj.toISOString().split('T')[0];
-                    setBirthDate(formattedUrl);
+                    setBirthDate(dateObj.toISOString().split('T')[0]);
                 }
             } catch (error) {
                 console.error("Erro ao carregar perfil", error);
@@ -51,7 +51,14 @@ export function UserProfile() {
         };
 
         fetchProfile();
-    }, []);
+
+        const googleStatus = searchParams.get('google');
+        if (googleStatus === 'connected') {
+            toast.success("Agenda Google conectada com sucesso!");
+        } else if (googleStatus === 'error') {
+            toast.error("Erro ao conectar com a Agenda Google.");
+        }
+    }, [searchParams]);
 
     const handleSave = async () => {
         setIsSaving(true);
@@ -64,7 +71,7 @@ export function UserProfile() {
             };
             const res = await api.put('/user/profile', payload);
             setUser(res.data);
-            localStorage.setItem('user', JSON.stringify(res.data)); // atualiza local state
+            localStorage.setItem('user', JSON.stringify(res.data));
             toast.success("Perfil atualizado com sucesso!");
         } catch (error) {
             console.error(error);
@@ -110,6 +117,20 @@ export function UserProfile() {
             toast.error(error.response?.data?.error || "Erro ao alterar senha.");
         } finally {
             setIsChangingPassword(false);
+        }
+    };
+
+    const handleConnectGoogle = async () => {
+        setIsConnectingGoogle(true);
+        try {
+            const res = await api.get(`/auth/google/url?userId=${user.id}`);
+            if (res.data.url) {
+                window.location.href = res.data.url;
+            }
+        } catch (error) {
+            toast.error("Erro ao iniciar conexão com Google.");
+        } finally {
+            setIsConnectingGoogle(false);
         }
     };
 
@@ -176,20 +197,11 @@ export function UserProfile() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                         <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Nome Completo</label>
-                        <input
-                            type="text"
-                            className="input-field"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                        />
+                        <input type="text" className="input-field" value={name} onChange={(e) => setName(e.target.value)} />
                     </div>
                     <div>
-                        <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Como prefere ser chamada? (Pronomes)</label>
-                        <select
-                            className="input-field"
-                            value={pronouns}
-                            onChange={(e) => setPronouns(e.target.value)}
-                        >
+                        <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Pronomes</label>
+                        <select className="input-field" value={pronouns} onChange={(e) => setPronouns(e.target.value)}>
                             <option value="Ela/Dela">Ela/Dela</option>
                             <option value="Ele/Dele">Ele/Dele</option>
                             <option value="Elu/Delu">Elu/Delu</option>
@@ -199,14 +211,8 @@ export function UserProfile() {
                     </div>
                     <div>
                         <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Data de Nascimento</label>
-                        <input
-                            type="date"
-                            className="input-field"
-                            value={birthDate}
-                            onChange={(e) => setBirthDate(e.target.value)}
-                        />
+                        <input type="date" className="input-field" value={birthDate} onChange={(e) => setBirthDate(e.target.value)} />
                     </div>
-
                     <button
                         className="btn-primary"
                         style={{ marginTop: '16px', padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center' }}
@@ -218,80 +224,91 @@ export function UserProfile() {
                 </div>
             </div>
 
+            {/* Google Calendar Section */}
+            <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+                    <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Calendar size={20} color="white" />
+                    </div>
+                    <div>
+                        <h2 style={{ fontSize: '1.15rem', marginBottom: '2px' }}>Google Agenda</h2>
+                        <p className="text-muted" style={{ fontSize: '0.85rem' }}>Sincronize seus agendamentos automaticamente</p>
+                    </div>
+                </div>
+
+                <div style={{ background: user?.googleAccessToken ? '#E8F5E9' : '#F5F5F5', padding: '16px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <span style={{ fontSize: '0.9rem', fontWeight: 500, color: user?.googleAccessToken ? '#2E7D32' : 'var(--co-text-dark)' }}>
+                        {user?.googleAccessToken ? 'Conectado com sucesso' : 'Não conectado'}
+                    </span>
+                    <button
+                        className="btn-secondary"
+                        style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '0.85rem', background: user?.googleAccessToken ? 'white' : 'var(--co-lavender)', color: 'var(--co-accent)', border: 'none' }}
+                        onClick={handleConnectGoogle}
+                        disabled={isConnectingGoogle}
+                    >
+                        {isConnectingGoogle ? <Loader2 className="animate-spin" size={16} /> : user?.googleAccessToken ? 'Reconectar' : 'Conectar'}
+                    </button>
+                </div>
+            </div>
+
+            {/* Security Section */}
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         <Lock size={20} color="var(--co-accent)" />
                     </div>
-                    <h2 style={{ fontSize: '1.15rem' }}>Segurança da Conta</h2>
+                    <h2 style={{ fontSize: '1.15rem' }}>Segurança</h2>
                 </div>
 
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-                    {/* Password Section */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Alterar Senha de Acesso</h3>
-                        <div style={{ position: 'relative' }}>
-                            <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Senha Atual</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '12px' }}>Alterar Senha</h3>
+                        <div style={{ position: 'relative', marginBottom: '12px' }}>
                             <input
                                 type={showPasswords ? "text" : "password"}
                                 className="input-field"
-                                placeholder="Sua senha atual"
-                                style={{ paddingRight: '48px' }}
+                                placeholder="Senha Atual"
                                 value={currentPassword}
                                 onChange={(e) => setCurrentPassword(e.target.value)}
                             />
-                            <button
-                                type="button"
-                                onClick={() => setShowPasswords(!showPasswords)}
-                                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
-                            >
-                                {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
-                            </button>
                         </div>
-                        <div style={{ position: 'relative' }}>
-                            <label className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '8px', display: 'block' }}>Nova Senha</label>
+                        <div style={{ position: 'relative', marginBottom: '16px' }}>
                             <input
                                 type={showPasswords ? "text" : "password"}
                                 className="input-field"
-                                placeholder="Uma nova senha forte"
-                                style={{ paddingRight: '48px' }}
+                                placeholder="Nova Senha"
                                 value={newPassword}
                                 onChange={(e) => setNewPassword(e.target.value)}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPasswords(!showPasswords)}
-                                style={{ position: 'absolute', right: '12px', top: '38px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
+                                style={{ position: 'absolute', right: '12px', top: '12px', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--co-text-muted)' }}
                             >
                                 {showPasswords ? <EyeOff size={20} /> : <Eye size={20} />}
                             </button>
                         </div>
                         <button
                             className="btn-secondary"
-                            style={{ padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center', background: 'transparent', border: '1px solid var(--co-accent)', color: 'var(--co-accent)' }}
+                            style={{ width: '100%', padding: '12px', borderRadius: '12px' }}
                             onClick={handleChangePassword}
                             disabled={isChangingPassword}
                         >
-                            {isChangingPassword ? <Loader2 size={20} className="animate-spin" /> : 'Alterar Senha'}
+                            {isChangingPassword ? <Loader2 size={16} className="animate-spin" /> : 'Atualizar Senha'}
                         </button>
                     </div>
 
                     <hr style={{ border: 'none', borderTop: '1px solid rgba(0,0,0,0.05)' }} />
 
-                    {/* Vault PIN Section */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <h3 style={{ fontSize: '1rem', fontWeight: 600 }}>Senha do Cofre (PIN de 4 dígitos)</h3>
-                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>
-                            {user?.vaultPin ? 'Você já possui um PIN configurado para o cofre.' : 'Proteja suas reflexões com uma senha numérica exclusiva.'}
-                        </p>
+                    <div>
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '8px' }}>PIN do Cofre</h3>
+                        <p className="text-muted" style={{ fontSize: '0.85rem', marginBottom: '16px' }}>Proteja suas reflexões com um código de 4 dígitos.</p>
                         <button
                             className="btn-secondary"
-                            style={{ padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'center', background: 'var(--co-lavender)', border: 'none', color: 'var(--co-accent)', fontWeight: 600 }}
-                            onClick={() => {
-                                navigate('/cofre');
-                            }}
+                            style={{ width: '100%', padding: '12px', borderRadius: '12px', background: 'var(--co-lavender)', border: 'none', color: 'var(--co-accent)' }}
+                            onClick={() => navigate('/cofre')}
                         >
-                            {user?.vaultPin ? 'Alterar PIN do Cofre' : 'Configurar PIN do Cofre'}
+                            {user?.vaultPin ? 'Alterar PIN' : 'Configurar PIN'}
                         </button>
                     </div>
                 </div>

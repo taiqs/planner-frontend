@@ -8,47 +8,100 @@ import api from '../services/api';
 const QUESTIONS = [
     {
         id: 'q1',
-        text: 'Com que frequência você sente que sua mente está acelerada a ponto de não conseguir focar em uma única tarefa?',
+        part: 'Funcionamento Cognitivo',
+        text: 'Quando você precisa aprender algo novo, o que mais te ajuda?',
         options: [
-            { label: 'Raramente', value: 1 },
-            { label: 'Algumas vezes', value: 2 },
-            { label: 'Quase sempre', value: 3 }
+            { label: 'Ver imagens, gráficos ou vídeos', value: 1 },
+            { label: 'Ouvir explicações', value: 1 },
+            { label: 'Ler e/ou escrever', value: 1 },
+            { label: 'Praticar/fazer na prática', value: 1 },
+            { label: 'Depende muito da situação', value: 2 },
+            { label: 'Tenho dificuldade independentemente do método', value: 3 }
         ]
     },
     {
         id: 'q2',
-        text: 'Quando precisa estudar ou trabalhar em algo chato, o que acontece?',
+        part: 'Funcionamento Cognitivo',
+        text: 'Sobre sua atenção e concentração, você diria que:',
         options: [
-            { label: 'Faço e pronto', value: 1 },
-            { label: 'Procrastino um pouco, mas entrego', value: 2 },
-            { label: 'Mudo de aba 10 vezes e perco o prazo', value: 3 }
+            { label: 'Consigo manter o foco com facilidade, mesmo por longos períodos', value: 1 },
+            { label: 'Me distraio um pouco, mas consigo retomar o foco', value: 2 },
+            { label: 'Me distraio com frequência, principalmente em tarefas longas', value: 3 },
+            { label: 'Só consigo focar em coisas que me interessam muito', value: 4 },
+            { label: 'Tenho muita dificuldade de manter atenção, mesmo em tarefas importantes', value: 5 }
         ]
     },
     {
         id: 'q3',
-        text: 'Onde estão suas chaves ou celular neste momento?',
+        part: 'Funcionamento Cognitivo',
+        text: 'Como você se organiza para realizar suas tarefas do dia a dia?',
         options: [
-            { label: 'Exatamente onde deixei', value: 1 },
-            { label: 'Preciso pensar dois segundos', value: 2 },
-            { label: 'Boa pergunta... vou ligar para o meu próprio número', value: 3 }
+            { label: 'Planejo tudo com antecedência e sigo um roteiro', value: 1 },
+            { label: 'Faço listas ou uso algum método de organização', value: 2 },
+            { label: 'Me organizo mentalmente, sem anotar muito', value: 3 },
+            { label: 'Costumo deixar para resolver na hora', value: 4 },
+            { label: 'Tenho dificuldade de me organizar e frequentemente me perco nas tarefas', value: 5 }
         ]
     },
     {
         id: 'q4',
-        text: 'Como você lida com ambientes muito barulhentos?',
+        part: 'Funcionamento Cognitivo',
+        text: 'Quando surge um problema inesperado, você geralmente:',
         options: [
-            { label: 'Não me incomoda', value: 1 },
-            { label: 'Incomoda, mas tolero', value: 2 },
-            { label: 'Fico extremamente cansado/irritado', value: 3 }
+            { label: 'Resolve rapidamente e com confiança', value: 1 },
+            { label: 'Pensa um pouco e encontra uma solução', value: 2 },
+            { label: 'Fica em dúvida, mas tenta resolver', value: 3 },
+            { label: 'Prefere pedir ajuda', value: 4 },
+            { label: 'Evita ou se sente travado diante da situação', value: 5 }
         ]
     },
     {
         id: 'q5',
-        text: 'Quantos hobbies diferentes você tentou iniciar nos últimos 6 meses?',
+        part: 'Personalidade',
+        text: 'Quando você sente emoções difíceis (raiva, tristeza, frustração), você costuma:',
         options: [
-            { label: 'Nenhum ou um', value: 1 },
-            { label: 'Dois ou três', value: 2 },
-            { label: 'Perdi as contas, já comprei kits de pintura e violão', value: 3 }
+            { label: 'Lidar bem e entender o que está sentindo', value: 1 },
+            { label: 'Expressar e conversar com alguém', value: 2 },
+            { label: 'Tentar controlar e guardar para si', value: 3 },
+            { label: 'Reagir impulsivamente às vezes', value: 4 },
+            { label: 'Ter dificuldade de lidar e se sentir sobrecarregado(a)', value: 5 }
+        ]
+    },
+    {
+        id: 'q6',
+        part: 'Personalidade',
+        text: 'Em relação ao seu jeito social, você se considera:',
+        options: [
+            { label: 'Mais reservado(a) e introspectivo(a)', value: 1 },
+            { label: 'Um pouco reservado(a), dependendo do ambiente', value: 2 },
+            { label: 'Equilibrado(a), varia conforme a situação', value: 3 },
+            { label: 'Mais comunicativo(a) e sociável', value: 4 },
+            { label: 'Muito expansivo(a), gosto de estar com pessoas o tempo todo', value: 5 }
+        ]
+    },
+    {
+        id: 'q7',
+        part: 'Personalidade',
+        text: 'O que mais te motiva no dia a dia?',
+        options: [
+            { label: 'Metas e resultados', value: 1 },
+            { label: 'Reconhecimento e valorização', value: 2 },
+            { label: 'Rotina e estabilidade', value: 3 },
+            { label: 'Desafios e novidades', value: 4 },
+            { label: 'Depende muito do momento', value: 5 },
+            { label: 'Tenho dificuldade de me sentir motivado(a)', value: 6 }
+        ]
+    },
+    {
+        id: 'q8',
+        part: 'Personalidade',
+        text: 'Quando algo não sai como você esperava, você geralmente:',
+        options: [
+            { label: 'Lida bem e tenta novamente', value: 1 },
+            { label: 'Fica frustrado(a), mas consegue seguir em frente', value: 2 },
+            { label: 'Fica pensando bastante no que deu errado', value: 3 },
+            { label: 'Se culpa ou se cobra muito', value: 4 },
+            { label: 'Evita tentar de novo ou desiste facilmente', value: 5 }
         ]
     }
 ];
@@ -77,9 +130,11 @@ export function AssessmentQuiz() {
     const finishQuiz = async (finalScore: number, finalAnswers: any) => {
         setIsSubmitting(true);
         let calculatedResult = "";
-        if (finalScore <= 6) calculatedResult = "Foco Estável e Metódico";
-        else if (finalScore <= 11) calculatedResult = "Perfil Flexível / Moderado";
-        else calculatedResult = "Mente Acelerada / Criativa (Traços de Desatenção)";
+        
+        // Ajuste de pontuação baseado em 8 perguntas
+        if (finalScore <= 12) calculatedResult = "Perfil Funcional e Equilibrado";
+        else if (finalScore <= 22) calculatedResult = "Perfil em Desenvolvimento";
+        else calculatedResult = "Perfil com Necessidade de Suporte";
 
         try {
             await api.post('/assessments', {
@@ -91,7 +146,7 @@ export function AssessmentQuiz() {
             setResult(calculatedResult);
         } catch (error) {
             console.error(error);
-            toast.error("Você precisa estar logado na plataforma para salvar seu resultado!");
+            toast.error("Você precisa estar logado para salvar seu resultado!");
             navigate('/login');
         } finally {
             setIsSubmitting(false);
@@ -112,13 +167,13 @@ export function AssessmentQuiz() {
                         <div style={{ width: '80px', height: '80px', borderRadius: '40px', background: 'var(--co-accent)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
                             <Brain size={40} />
                         </div>
-                        <h1 style={{ fontSize: '1.8rem', color: 'var(--co-primary)', marginBottom: '8px' }}>Seu Perfil Cognitivo:</h1>
-                        <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--co-accent)', marginBottom: '16px' }}>{result}</h2>
+                        <h1 style={{ fontSize: '1.5rem', color: 'var(--co-primary)', marginBottom: '8px' }}>Seu Mapeamento Concluído:</h1>
+                        <h2 style={{ fontSize: '1.3rem', fontWeight: 700, color: 'var(--co-accent)', marginBottom: '16px' }}>{result}</h2>
 
-                        <p className="text-muted" style={{ lineHeight: 1.6, marginBottom: '32px' }}>
-                            {score > 11 ? 'Sua mente processa informações rapidamente e possui forte veia criativa. No entanto, o excesso de estímulos pode gerar sobrecarga mental e perda de foco em tarefas monótonas. Uma avaliação neuropsicológica pode te ajudar a canalizar essa energia!' :
-                                score > 6 ? 'Você consegue equilibrar momentos de foco com criatividade. Flutuações de atenção acontecem de vez em quando sob estresse, mas no geral você tem boas ferramentas de organização.' :
-                                    'Você é altamente focado, lida bem com rotinas de trabalho constantes e não se deixa levar facilmente por distrações. Seu perfil tende à organização metódica.'}
+                        <p className="text-muted" style={{ lineHeight: 1.6, marginBottom: '32px', fontSize: '1rem' }}>
+                            {score > 22 ? 'Suas respostas indicam que você pode estar enfrentando desafios significativos em sua organização cognitiva ou regulação emocional. No entanto, lembre-se que cada mente é única! Uma investigação mais profunda pode revelar grandes potenciais.' :
+                                score > 12 ? 'Você apresenta um equilíbrio razoável, com oscilações normais decorrentes do dia a dia. Há pontos que podem ser otimizados para garantir mais leveza e produtividade na sua rotina.' :
+                                    'Seu perfil demonstra boas estratégias de resolução e um funcionamento cognitivo estável. Você lida bem com a maioria das situações apresentadas no questionário.'}
                         </p>
                     </motion.div>
                 </div>
@@ -126,14 +181,14 @@ export function AssessmentQuiz() {
                 <div className="glass-panel" style={{ padding: '24px', textAlign: 'center', background: 'var(--co-lavender)', borderColor: 'var(--co-accent)' }}>
                     <h3 style={{ fontSize: '1.1rem', marginBottom: '8px', color: 'var(--co-primary)' }}>Avaliação Neuropsicológica</h3>
                     <p style={{ fontSize: '0.9rem', color: 'var(--co-text-muted)', marginBottom: '16px', lineHeight: 1.5 }}>
-                        O teste acima é apenas um rastreio inicial. Para um diagnóstico completo (como TDAH, Autismo ou Altas Habilidades) e um plano de desenvolvimento individual, a Avaliação Neuropsicológica é o caminho ideal.
+                        Este questionário é um rastreio qualitativo. Para entender profundamente seu funcionamento cerebral (atenção, memória, personalidade), agende sua avaliação completa.
                     </p>
                     <button
                         className="btn-primary"
-                        style={{ width: '100%', padding: '16px', borderRadius: '16px', marginBottom: '12px', background: 'var(--co-accent)', color: 'var(--co-text-dark)' }}
+                        style={{ width: '100%', padding: '16px', borderRadius: '16px', marginBottom: '12px', background: 'var(--co-accent)', color: 'white', border: 'none' }}
                         onClick={() => navigate('/avaliacao-neuropsicologica')}
                     >
-                        Entender as etapas e valores
+                        Conhecer a Avaliação
                     </button>
                     <button
                         className="btn-secondary"
@@ -163,18 +218,18 @@ export function AssessmentQuiz() {
                     <div style={{ width: '80px', height: '80px', borderRadius: '40px', background: 'var(--co-serene-blue)', color: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '24px' }}>
                         <Brain size={40} />
                     </div>
-                    <h1 style={{ fontSize: '2rem', color: 'var(--co-primary)', marginBottom: '16px' }}>Descubra seu<br />Perfil Cognitivo</h1>
+                    <h1 style={{ fontSize: '2rem', color: 'var(--co-primary)', marginBottom: '16px' }}>Perfil Cognitivo e Personalidade</h1>
                     <p className="text-muted" style={{ fontSize: '1.1rem', lineHeight: 1.5, marginBottom: '40px' }}>
-                        Um quiz interativo de 5 perguntas para ajudar a mapear como sua mente organiza informações, lida com distrações e constrói foco no dia a dia.
+                        Um questionário atualizado para mapear seu funcionamento no dia a dia, motivação e reações sociais.
                     </p>
-                    <button className="btn-primary" style={{ padding: '16px 32px', borderRadius: '24px', fontSize: '1.1rem', display: 'flex', gap: '8px', alignItems: 'center' }} onClick={handleStart}>
+                    <button className="btn-primary" style={{ padding: '16px 32px', borderRadius: '24px', fontSize: '1.1rem', display: 'flex', gap: '8px', alignItems: 'center', background: 'var(--co-accent)', color: 'white', border: 'none' }} onClick={handleStart}>
                         Começar Avaliação <ArrowRight size={20} />
                     </button>
-                    <p style={{ fontSize: '0.8rem', color: 'var(--co-text-muted)', marginTop: '24px' }}>*Este é um pré-teste rastreador, não substitui laudo diagnóstico oficial da neuropsicóloga.</p>
+                    <p style={{ fontSize: '0.8rem', color: 'var(--co-text-muted)', marginTop: '24px' }}>*Este é um pré-teste qualitativo para apoio clínico.</p>
                 </motion.div>
             ) : (
                 <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '40px', paddingTop: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '24px', paddingTop: '16px' }}>
                         <button className="btn-secondary" style={{ padding: '8px', borderRadius: '12px' }} onClick={() => currentStep === 0 ? setCurrentStep(-1) : setCurrentStep(prev => prev - 1)}>
                             <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />
                         </button>
@@ -182,6 +237,12 @@ export function AssessmentQuiz() {
                             <div style={{ height: '100%', background: 'var(--co-accent)', width: `${((currentStep + 1) / QUESTIONS.length) * 100}%`, transition: 'width 0.3s ease' }} />
                         </div>
                         <span style={{ fontSize: '0.9rem', color: 'var(--co-text-muted)', fontWeight: 600 }}>{currentStep + 1}/{QUESTIONS.length}</span>
+                    </div>
+
+                    <div style={{ marginBottom: '16px' }}>
+                        <span style={{ background: 'var(--co-lavender)', color: 'var(--co-accent)', padding: '4px 12px', borderRadius: '20px', fontSize: '0.8rem', fontWeight: 600 }}>
+                            {QUESTIONS[currentStep].part}
+                        </span>
                     </div>
 
                     <AnimatePresence mode="wait">
@@ -193,19 +254,19 @@ export function AssessmentQuiz() {
                             transition={{ duration: 0.3 }}
                             style={{ flex: 1 }}
                         >
-                            <h2 style={{ fontSize: '1.5rem', lineHeight: 1.4, color: 'var(--co-primary)', marginBottom: '32px' }}>
+                            <h2 style={{ fontSize: '1.3rem', lineHeight: 1.4, color: 'var(--co-primary)', marginBottom: '32px' }}>
                                 {QUESTIONS[currentStep].text}
                             </h2>
 
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                 {QUESTIONS[currentStep].options.map((opt, i) => (
                                     <button
                                         key={i}
                                         className="btn-secondary"
-                                        style={{ padding: '20px', borderRadius: '16px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--co-white)', border: '2px solid transparent', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: 'all 0.2s', fontSize: '1.05rem', color: 'var(--co-text-dark)' }}
+                                        style={{ padding: '16px', borderRadius: '16px', textAlign: 'left', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--co-white)', border: '2px solid transparent', boxShadow: '0 4px 12px rgba(0,0,0,0.03)', transition: 'all 0.2s', fontSize: '1rem', color: 'var(--co-text-dark)' }}
                                         onClick={() => handleAnswer(QUESTIONS[currentStep].id, opt.value, opt.label)}
                                     >
-                                        {opt.label}
+                                        <span style={{ flex: 1 }}>{opt.label}</span>
                                         {answers[QUESTIONS[currentStep].id] === opt.label && <CheckCircle size={20} color="var(--co-accent)" />}
                                     </button>
                                 ))}
@@ -218,7 +279,7 @@ export function AssessmentQuiz() {
             {isSubmitting && (
                 <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(255,255,255,0.8)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
                     <Loader2 size={40} className="animate-spin" color="var(--co-accent)" style={{ marginBottom: '16px' }} />
-                    <h2 style={{ color: 'var(--co-primary)' }}>Analisando respostas...</h2>
+                    <h2 style={{ color: 'var(--co-primary)' }}>Mapeando perfil...</h2>
                 </div>
             )}
         </div>

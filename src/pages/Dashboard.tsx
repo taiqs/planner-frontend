@@ -19,6 +19,7 @@ export function Dashboard() {
     const [streak, setStreak] = useState(0);
     const [emergencyEnabled, setEmergencyEnabled] = useState(false);
     const [hasPsychologist, setHasPsychologist] = useState(false);
+    const [hasVaultEntries, setHasVaultEntries] = useState(false);
     const [interestedInTherapy, setInterestedInTherapy] = useState(false);
     const [showPlansModal, setShowPlansModal] = useState(false);
     const [nextAppointment, setNextAppointment] = useState<any>(null);
@@ -58,10 +59,11 @@ export function Dashboard() {
     const loadDashboardData = async () => {
         setIsLoadingData(true);
         try {
-            const [profileRes, streakRes, aptsRes] = await Promise.all([
+            const [profileRes, streakRes, aptsRes, vaultRes] = await Promise.all([
                 api.get('/user/me'),
                 api.get('/mood/streak'),
-                api.get('/appointments').catch(() => ({ data: [] }))
+                api.get('/appointments').catch(() => ({ data: [] })),
+                api.get('/vault').catch(() => ({ data: [] }))
             ]);
 
             const user = profileRes.data;
@@ -70,6 +72,7 @@ export function Dashboard() {
             setEmergencyEnabled(user.emergencyEnabled);
             setHasPsychologist(!!user.psychologistId);
             setInterestedInTherapy(!!user.interestedInTherapy);
+            setHasVaultEntries(vaultRes.data.length > 0);
             setStreak(streakRes.data.streak || 0);
             setLoggedToday(streakRes.data.loggedToday || false);
 
@@ -352,15 +355,18 @@ export function Dashboard() {
                     </div>
                 )}
 
-                <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', background: 'var(--co-white)' }} onClick={handleExportReport}>
+                {hasVaultEntries && (
+                    <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', background: 'var(--co-white)' }} onClick={handleExportReport}>
                     <div style={{ background: 'var(--co-lavender)', width: '48px', height: '48px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                         {isGeneratingReport ? <Loader2 size={24} className="animate-spin" color="var(--co-accent)" /> : <FileText size={24} color="var(--co-text-dark)" />}
                     </div>
                     <div style={{ flex: 1 }}>
-                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Gerar Relatório de Terapia</h3>
-                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Resumo dos últimos 14 dias p/ psicóloga</p>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Relatório Pré-Sessão</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Resumo dos últimos 7 dias p/ psicóloga (PDF)</p>
                     </div>
+                    <Download size={20} className="text-muted" />
                 </div>
+                )}
 
                 <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/avaliacao-neuropsicologica')}>
                     <div style={{ background: 'var(--co-lavender)', padding: '12px', borderRadius: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -465,8 +471,8 @@ export function Dashboard() {
                                         <MessageSquare size={20} color="var(--co-accent)" />
                                     </div>
                                     <div>
-                                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Sessões Acolhedoras</h4>
-                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Encontros semanais de 50 minutos focados nas suas necessidades e objetivos emocionais.</p>
+                                        <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Tempo de Terapia</h4>
+                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Encontros semanais de 50 minutos dedicados a você. A frequência e duração seguem o padrão neuropsicológico de excelência clínica.</p>
                                     </div>
                                 </div>
 
@@ -476,7 +482,7 @@ export function Dashboard() {
                                     </div>
                                     <div>
                                         <h4 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>Conteúdos Postados</h4>
-                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Suas notas e áudios servem como um guia para que você tenha sempre em mãos o que falar no dia da sessão.</p>
+                                        <p style={{ color: 'var(--co-text-muted)', fontSize: '0.9rem', lineHeight: 1.4 }}>Suas reflexões no Cofre servem como seu guia pessoal. Use o que registrou no dia a dia para valorizar cada minuto da sua sessão.</p>
                                     </div>
                                 </div>
 
