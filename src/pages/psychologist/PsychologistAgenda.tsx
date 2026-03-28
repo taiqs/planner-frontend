@@ -108,7 +108,7 @@ export function PsychologistAgenda() {
                 </header>
 
                 {isScheduling && (
-                    <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', border: '2px solid var(--co-accent)', position: 'relative' }}>
+                    <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px', border: '2px solid var(--co-accent)', position: 'relative', zIndex: 110 }}>
                         <button
                             className="btn-secondary"
                             style={{ position: 'absolute', top: '16px', right: '16px', width: '36px', height: '36px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '18px' }}
@@ -140,7 +140,7 @@ export function PsychologistAgenda() {
                             </div>
 
                             <div style={{ gridColumn: '1 / -1' }}>
-                                <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Link da chamada ou notas extras (Opcional. Será enviado via WhatsApp posteriormente caso não tenha agora)</label>
+                                <label className="text-muted" style={{ display: 'block', marginBottom: '8px' }}>Link da chamada ou notas extras (Opcional. Se vazio, o paciente verá o aviso de envio via WhatsApp)</label>
                                 <textarea className="input-field" value={notes} onChange={e => setNotes(e.target.value)} rows={2} placeholder="Ex: meet.google.com/abc-defg-hij" />
                             </div>
 

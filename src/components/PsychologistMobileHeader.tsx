@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { Bell, BellRing, Check, X } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Bell, BellRing, Check, X, LogOut } from 'lucide-react';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
 
 export function PsychologistMobileHeader() {
     const location = useLocation();
+    const navigate = useNavigate();
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -37,30 +38,46 @@ export function PsychologistMobileHeader() {
         }
     };
 
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        navigate('/');
+    };
+
     const unreadCount = notifications.filter(n => !n.read).length;
 
     if (!location.pathname.startsWith('/psicologo')) return null;
 
     return (
         <div className="psi-mobile-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '18px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden', border: '2px solid white' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <div style={{ width: '32px', height: '32px', borderRadius: '16px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden', border: '1px solid white' }}>
                     {user?.avatarUrl ? <img src={getProxyUrl(user.avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : user?.name?.charAt(0)}
                 </div>
-                <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>Painel Psi</span>
+                <span style={{ fontWeight: 700, fontSize: '0.9rem', whiteSpace: 'nowrap' }}>Dra. Tailiny Quirino</span>
             </div>
 
-            <button 
-                onClick={() => setShowNotifications(!showNotifications)}
-                style={{ position: 'relative', border: 'none', background: 'var(--co-white)', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
-            >
-                {unreadCount > 0 ? <BellRing size={20} color="var(--co-action)" /> : <Bell size={20} color="var(--co-text-muted)" />}
-                {unreadCount > 0 && (
-                    <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--co-danger-text)', color: 'white', fontSize: '0.6rem', width: '16px', height: '16px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid var(--co-primary-bg)' }}>
-                        {unreadCount}
-                    </span>
-                )}
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <button 
+                    onClick={() => setShowNotifications(!showNotifications)}
+                    style={{ position: 'relative', border: 'none', background: 'var(--co-white)', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+                >
+                    {unreadCount > 0 ? <BellRing size={20} color="var(--co-action)" /> : <Bell size={20} color="var(--co-text-muted)" />}
+                    {unreadCount > 0 && (
+                        <span style={{ position: 'absolute', top: '-4px', right: '-4px', background: 'var(--co-danger-text)', color: 'white', fontSize: '0.6rem', width: '16px', height: '16px', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', border: '2px solid var(--co-primary-bg)' }}>
+                            {unreadCount}
+                        </span>
+                    )}
+                </button>
+
+                <button 
+                    onClick={handleLogout}
+                    style={{ border: 'none', background: 'var(--co-danger)', color: 'var(--co-danger-text)', width: '36px', height: '36px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}
+                    title="Sair"
+                >
+                    <LogOut size={20} />
+                </button>
+            </div>
 
             {showNotifications && (
                 <div style={{ position: 'fixed', top: '70px', left: '16px', right: '16px', background: 'white', borderRadius: '16px', boxShadow: '0 10px 40px rgba(0,0,0,0.15)', zIndex: 200, maxHeight: '70vh', overflowY: 'auto', border: '1px solid rgba(0,0,0,0.05)' }}>

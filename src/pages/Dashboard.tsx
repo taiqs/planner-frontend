@@ -450,16 +450,18 @@ export function Dashboard() {
                             </div>
                             <div style={{ flex: 1 }}>
                                 <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Próxima Sessão</h3>
-                                <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: nextAppointment?.notes ? '8px' : '0' }}>
+                                <p className="text-muted" style={{ fontSize: '0.9rem', marginBottom: '8px' }}>
                                     {nextAppointment
                                         ? new Date(nextAppointment.date).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })
                                         : 'A definir com a terapeuta'}
                                 </p>
-                                {nextAppointment?.notes && (
-                                    <div style={{ fontSize: '0.85rem', padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)', color: 'var(--co-text-dark)' }}>
-                                        <strong>Nota:</strong> {nextAppointment.notes}
-                                    </div>
-                                )}
+                                <div style={{ fontSize: '0.85rem', padding: '8px 12px', background: 'rgba(255,255,255,0.5)', borderRadius: '8px', border: '1px solid rgba(0,0,0,0.05)', color: 'var(--co-text-dark)' }}>
+                                    {nextAppointment?.notes ? (
+                                        <><strong>Link/Nota:</strong> {nextAppointment.notes}</>
+                                    ) : (
+                                        <span style={{ color: 'var(--co-action)', fontWeight: 600 }}>O link da chamada será enviado via WhatsApp minutos antes da sessão.</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </>
