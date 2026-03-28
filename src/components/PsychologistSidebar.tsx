@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Activity, Users, Calendar as CalendarIcon, LogOut, BookOpen, Brain, Bell, BellRing, Check, X, DollarSign } from 'lucide-react';
+import { Activity, Users, Calendar as CalendarIcon, LogOut, BookOpen, Brain, Bell, BellRing, Check, X, DollarSign, User } from 'lucide-react';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
 
@@ -56,7 +56,10 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
     return (
         <div className="psi-sidebar" style={{ position: 'relative' }}>
             <div style={{ marginBottom: '40px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div 
+                    onClick={() => navigate('/psicologo/perfil')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}
+                >
                     <div style={{ width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden' }}>
                         {user?.avatarUrl ? (
                             <img src={getProxyUrl(user.avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
@@ -160,6 +163,12 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
                     style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', background: activePath === 'financeiro' ? 'var(--co-serene-blue)' : 'transparent', color: activePath === 'financeiro' ? 'var(--co-text-dark)' : 'var(--co-text-muted)', fontWeight: activePath === 'financeiro' ? 600 : 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
                 >
                     <DollarSign size={20} /> Financeiro
+                </button>
+                <button
+                    onClick={() => navigate('/psicologo/perfil')}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', background: activePath === 'perfil' ? 'var(--co-serene-blue)' : 'transparent', color: activePath === 'perfil' ? 'var(--co-text-dark)' : 'var(--co-text-muted)', fontWeight: activePath === 'perfil' ? 600 : 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
+                >
+                    <User size={20} /> Meu Perfil
                 </button>
             </nav>
 

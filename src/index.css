@@ -279,8 +279,9 @@ h6 {
 }
 
 @media (min-width: 769px) {
-  .psi-mobile-header {
-    display: none;
+  .psi-mobile-header,
+  .psychologist-mobile-nav {
+    display: none !important;
   }
 }
 

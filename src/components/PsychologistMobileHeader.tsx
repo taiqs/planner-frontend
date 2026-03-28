@@ -50,7 +50,10 @@ export function PsychologistMobileHeader() {
 
     return (
         <div className="psi-mobile-header">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div 
+                onClick={() => navigate('/psicologo/perfil')}
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
+            >
                 <div style={{ width: '32px', height: '32px', borderRadius: '16px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden', border: '1px solid white' }}>
                     {user?.avatarUrl ? <img src={getProxyUrl(user.avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : user?.name?.charAt(0)}
                 </div>
