@@ -46,7 +46,7 @@ export function Blog() {
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><Loader2 className="animate-spin" size={32} color="var(--co-accent)" /></div>
             ) : articles.length === 0 ? (
                 <div className="glass-panel" style={{ padding: '40px', textAlign: 'center' }}>
-                    <p className="text-muted">Nenhum artigo publicado pela sua psicóloga ainda.</p>
+                    <p className="text-muted">Nenhum artigo publicado ainda.</p>
                 </div>
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>

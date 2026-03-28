@@ -431,19 +431,19 @@ export function Dashboard() {
                     <ChevronRight size={20} className="text-muted" />
                 </div>
 
+                <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/blog')}>
+                    <div style={{ background: 'var(--co-lavender)', padding: '12px', borderRadius: '16px' }}>
+                        <BookOpen size={24} color="var(--co-text-dark)" />
+                    </div>
+                    <div style={{ flex: 1 }}>
+                        <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Dicas e Artigos</h3>
+                        <p className="text-muted" style={{ fontSize: '0.9rem' }}>Leia conteúdos sobre Saúde Mental</p>
+                    </div>
+                    <ChevronRight size={20} className="text-muted" />
+                </div>
+
                 {hasPsychologist && (
                     <>
-                        <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer' }} onClick={() => navigate('/blog')}>
-                            <div style={{ background: 'var(--co-lavender)', padding: '12px', borderRadius: '16px' }}>
-                                <BookOpen size={24} color="var(--co-text-dark)" />
-                            </div>
-                            <div style={{ flex: 1 }}>
-                                <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Artigos da Clínica</h3>
-                                <p className="text-muted" style={{ fontSize: '0.9rem' }}>Leia conteúdos sobre Saúde Mental</p>
-                            </div>
-                            <ChevronRight size={20} className="text-muted" />
-                        </div>
-
                         <div className="glass-card" style={{ padding: '20px', display: 'flex', alignItems: 'center', gap: '16px' }}>
                             <div style={{ background: 'var(--co-serene-blue)', padding: '12px', borderRadius: '16px' }}>
                                 <CalendarIcon size={24} color="var(--co-text-dark)" />
