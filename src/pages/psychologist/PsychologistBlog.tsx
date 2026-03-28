@@ -102,7 +102,7 @@ export function PsychologistBlog() {
                 category: isAddingCustomCategory ? customCategory : category,
                 imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80'
             });
-            toast.success('Artigo publicado no feed de todos os pacientes!');
+            toast.success('Artigo publicado no feed de todos os usuários!');
             setIsWriting(false);
             resetForm();
             fetchArticles();
