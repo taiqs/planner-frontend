@@ -100,7 +100,7 @@ export function PsychologistBlog() {
                 title,
                 content,
                 category: isAddingCustomCategory ? customCategory : category,
-                imageUrl: imageUrl || 'https://images.unsplash.com/photo-1541480601022-2308c0f01587?auto=format&fit=crop&q=80'
+                imageUrl: imageUrl || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80'
             });
             toast.success('Artigo publicado no feed de todos os usuários!');
             setIsWriting(false);
