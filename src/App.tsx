@@ -8,6 +8,7 @@ import { offlineSyncService } from './services/offlineSyncService';
 import { BottomNav } from './components/BottomNav';
 import { PsychologistBottomNav } from './components/PsychologistBottomNav';
 import { PsychologistMobileHeader } from './components/PsychologistMobileHeader';
+import { PatientMobileHeader } from './components/PatientMobileHeader';
 
 // Patient Pages
 import { Landing } from './pages/Landing';
@@ -50,7 +51,7 @@ function App() {
     };
 
     window.addEventListener('online', handleOnline);
-    
+
     // Tenta processar ao abrir o app se já estiver online
     if (navigator.onLine) {
       offlineSyncService.processQueue();
@@ -65,55 +66,56 @@ function App() {
     <HelmetProvider>
       <Analytics />
       <Router>
-      <PsychologistMobileHeader />
-      <div style={{ position: 'relative' }}>
-        <Toaster position="top-center" toastOptions={{
-          duration: 3000,
-          style: {
-            background: 'var(--co-white)',
-            color: 'var(--co-text-dark)',
-            borderRadius: '16px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-            padding: '16px',
-            border: '1px solid rgba(0,0,0,0.05)'
-          },
-          success: {
-            iconTheme: {
-              primary: 'var(--co-action)',
-              secondary: 'white',
+        <PsychologistMobileHeader />
+        <PatientMobileHeader />
+        <div style={{ position: 'relative' }}>
+          <Toaster position="top-center" toastOptions={{
+            duration: 3000,
+            style: {
+              background: 'var(--co-white)',
+              color: 'var(--co-text-dark)',
+              borderRadius: '16px',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+              padding: '16px',
+              border: '1px solid rgba(0,0,0,0.05)'
             },
-          },
-        }} />
-        <Routes>
-          <Route path="/" element={<Landing />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/planner" element={<Planner />} />
-          <Route path="/calendario" element={<Calendar />} />
-          <Route path="/cofre" element={<VaultList />} />
-          <Route path="/dia/:diaId" element={<DayDetail />} />
-          <Route path="/emergencia" element={<EmergencyHub />} />
-          <Route path="/breathe" element={<Breathe />} />
-          <Route path="/grounding" element={<Grounding />} />
-          <Route path="/perfil" element={<UserProfile />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/assessment" element={<AssessmentQuiz />} />
-          <Route path="/avaliacao-neuropsicologica" element={<NeuroEvalInfo />} />
-          <Route path="/privacidade" element={<PrivacyPolicy />} />
-          <Route path="/termos" element={<TermsOfUse />} />
+            success: {
+              iconTheme: {
+                primary: 'var(--co-action)',
+                secondary: 'white',
+              },
+            },
+          }} />
+          <Routes>
+            <Route path="/" element={<Landing />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/onboarding" element={<Onboarding />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/planner" element={<Planner />} />
+            <Route path="/calendario" element={<Calendar />} />
+            <Route path="/cofre" element={<VaultList />} />
+            <Route path="/dia/:diaId" element={<DayDetail />} />
+            <Route path="/emergencia" element={<EmergencyHub />} />
+            <Route path="/breathe" element={<Breathe />} />
+            <Route path="/grounding" element={<Grounding />} />
+            <Route path="/perfil" element={<UserProfile />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/assessment" element={<AssessmentQuiz />} />
+            <Route path="/avaliacao-neuropsicologica" element={<NeuroEvalInfo />} />
+            <Route path="/privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos" element={<TermsOfUse />} />
 
-          <Route path="/psicologo/dashboard" element={<PsychologistDashboard />} />
-          <Route path="/psicologo/pacientes" element={<PsychologistPatients />} />
-          <Route path="/psicologo/paciente/:id" element={<PsychologistPatientDetail />} />
-          <Route path="/psicologo/agenda" element={<PsychologistAgenda />} />
-          <Route path="/psicologo/blog" element={<PsychologistBlog />} />
-          <Route path="/psicologo/avaliacoes" element={<PsychologistAssessments />} />
-          <Route path="/psicologo/financeiro" element={<PsychologistFinancial />} />
-        </Routes>
-        <BottomNav />
-        <PsychologistBottomNav />
-      </div>
+            <Route path="/psicologo/dashboard" element={<PsychologistDashboard />} />
+            <Route path="/psicologo/pacientes" element={<PsychologistPatients />} />
+            <Route path="/psicologo/paciente/:id" element={<PsychologistPatientDetail />} />
+            <Route path="/psicologo/agenda" element={<PsychologistAgenda />} />
+            <Route path="/psicologo/blog" element={<PsychologistBlog />} />
+            <Route path="/psicologo/avaliacoes" element={<PsychologistAssessments />} />
+            <Route path="/psicologo/financeiro" element={<PsychologistFinancial />} />
+          </Routes>
+          <BottomNav />
+          <PsychologistBottomNav />
+        </div>
       </Router>
     </HelmetProvider>
   );

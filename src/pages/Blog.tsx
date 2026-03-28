@@ -79,7 +79,7 @@ export function Blog() {
                 </button>
                 <div style={{ flex: 1 }}>
                     <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Conteúdos</h1>
-                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Artigos da sua clínica</p>
+                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Artigos da Ponto e Vírgula</p>
                 </div>
                 <div style={{ background: 'var(--co-lavender)', padding: '10px', borderRadius: '16px' }}>
                     <BookOpen size={24} color="var(--co-accent-hover)" />
@@ -95,15 +95,15 @@ export function Blog() {
             ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {articles.map(article => (
-                        <article 
-                            key={article.id} 
-                            className="glass-card" 
+                        <article
+                            key={article.id}
+                            className="glass-card"
                             onClick={() => openArticle(article)}
                             style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s ease' }}
                         >
                             {article.imageUrl && !imageErrors[article.id] && (
-                                <img 
-                                    src={getProxyUrl(article.imageUrl)} 
+                                <img
+                                    src={getProxyUrl(article.imageUrl)}
                                     alt="Capa"
                                     onError={() => handleImageError(article.id)}
                                     style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }}
@@ -142,14 +142,14 @@ export function Blog() {
 
             <AnimatePresence>
                 {selectedArticle && (
-                    <motion.div 
+                    <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}
                         onClick={() => setSelectedArticle(null)}
                     >
-                        <motion.div 
+                        <motion.div
                             initial={{ y: '100%' }}
                             animate={{ y: 0 }}
                             exit={{ y: '100%' }}
@@ -163,7 +163,7 @@ export function Blog() {
                                     <BookOpen size={20} color="var(--co-action)" />
                                     <span style={{ fontSize: '1rem', fontWeight: 800 }}>Artigo Completo</span>
                                 </div>
-                                <button 
+                                <button
                                     onClick={() => setSelectedArticle(null)}
                                     style={{ background: 'var(--co-lavender)', border: 'none', width: '40px', height: '40px', borderRadius: '20px', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}
                                 >
@@ -174,8 +174,8 @@ export function Blog() {
                             {/* Modal Body */}
                             <div style={{ padding: '24px', overflowY: 'auto', flex: 1 }}>
                                 {selectedArticle.imageUrl && !imageErrors[selectedArticle.id] && (
-                                    <img 
-                                        src={getProxyUrl(selectedArticle.imageUrl)} 
+                                    <img
+                                        src={getProxyUrl(selectedArticle.imageUrl)}
                                         alt="Capa"
                                         style={{ width: '100%', height: '240px', objectFit: 'cover', borderRadius: '24px', marginBottom: '24px' }}
                                     />
@@ -191,7 +191,7 @@ export function Blog() {
                                 </div>
 
                                 <h1 style={{ fontSize: '1.8rem', fontWeight: 900, color: 'var(--co-text-dark)', marginBottom: '24px', lineHeight: 1.15 }}>{selectedArticle.title}</h1>
-                                
+
                                 <div style={{ fontSize: '1.1rem', color: 'var(--co-text-dark)', lineHeight: 1.7, marginBottom: '48px', whiteSpace: 'pre-wrap' }}>
                                     {selectedArticle.content}
                                 </div>
@@ -219,7 +219,7 @@ export function Blog() {
                                             onChange={e => setNewComment(e.target.value)}
                                             style={{ width: '100%', height: '100px', padding: '16px', borderRadius: '20px', border: '1.5px solid rgba(0,0,0,0.1)', background: 'white', fontSize: '0.95rem', resize: 'none' }}
                                         />
-                                        <button 
+                                        <button
                                             onClick={handleSendComment}
                                             disabled={!newComment.trim() || isSendingComment}
                                             style={{ position: 'absolute', bottom: '12px', right: '12px', background: 'var(--co-action)', color: 'white', border: 'none', padding: '8px 20px', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, opacity: !newComment.trim() ? 0.5 : 1 }}

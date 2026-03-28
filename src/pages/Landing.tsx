@@ -14,6 +14,29 @@ export function Landing() {
     const [recentPosts, setRecentPosts] = useState<any[]>([]);
 
     useEffect(() => {
+        // Detecção de PWA (instalado)
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches 
+            || (window.navigator as any).standalone 
+            || document.referrer.includes('android-app://');
+
+        if (isStandalone) {
+            const token = localStorage.getItem('token');
+            const userStr = localStorage.getItem('user');
+            
+            if (token && userStr) {
+                const user = JSON.parse(userStr);
+                if (user.role === 'ADMIN') {
+                    navigate('/psicologo/dashboard', { replace: true });
+                } else {
+                    navigate('/dashboard', { replace: true });
+                }
+            } else {
+                navigate('/login', { replace: true });
+            }
+        }
+    }, [navigate]);
+
+    useEffect(() => {
         const fetchPosts = async () => {
             try {
                 const res = await api.get('/blog/public');
