@@ -8,6 +8,11 @@ export function Blog() {
     const navigate = useNavigate();
     const [articles, setArticles] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+    const handleImageError = (id: string) => {
+        setImageErrors(prev => ({ ...prev, [id]: true }));
+    };
 
     useEffect(() => {
         const fetchArticles = async () => {
@@ -52,7 +57,14 @@ export function Blog() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
                     {articles.map(article => (
                         <article key={article.id} className="glass-card" style={{ padding: 0, overflow: 'hidden', cursor: 'pointer', transition: 'transform 0.2s ease' }}>
-                            <div style={{ height: '140px', background: `url(${getProxyUrl(article.imageUrl) || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80'}) center/cover no-repeat` }} />
+                            {article.imageUrl && !imageErrors[article.id] && (
+                                <img 
+                                    src={getProxyUrl(article.imageUrl)} 
+                                    alt="Capa"
+                                    onError={() => handleImageError(article.id)}
+                                    style={{ width: '100%', height: '140px', objectFit: 'cover', display: 'block' }}
+                                />
+                            )}
 
                             <div style={{ padding: '20px' }}>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>

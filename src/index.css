@@ -264,6 +264,25 @@ h6 {
   /* Space for BottomNav on mobile */
 }
 
+.psi-mobile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.psychologist-mobile-nav {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-top: 1px solid rgba(149, 117, 205, 0.2) !important;
+}
+
 @media (min-width: 768px) {
   .psi-layout {
     flex-direction: row;

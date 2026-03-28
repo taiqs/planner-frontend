@@ -51,6 +51,8 @@ export function PsychologistBlog() {
     const [articles, setArticles] = useState<any[]>([]);
     const [isLoadingArticles, setIsLoadingArticles] = useState(true);
     const [isPublishing, setIsPublishing] = useState(false);
+    const [editingPostId, setEditingPostId] = useState<string | null>(null);
+    const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -96,22 +98,44 @@ export function PsychologistBlog() {
     const handlePublish = async () => {
         setIsPublishing(true);
         try {
-            await api.post('/blog', {
+            const payload = {
                 title,
                 content,
                 category: isAddingCustomCategory ? customCategory : category,
                 imageUrl: imageUrl || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80'
-            });
-            toast.success('Artigo publicado no feed de todos os usuários!');
+            };
+
+            if (editingPostId) {
+                await api.put(`/blog/${editingPostId}`, payload);
+                toast.success('Artigo atualizado com sucesso!');
+            } else {
+                await api.post('/blog', payload);
+                toast.success('Artigo publicado no feed de todos os usuários!');
+            }
+            
             setIsWriting(false);
+            setEditingPostId(null);
             resetForm();
             fetchArticles();
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao publicar artigo.");
+            toast.error(editingPostId ? "Erro ao atualizar artigo." : "Erro ao publicar artigo.");
         } finally {
             setIsPublishing(false);
         }
+    };
+
+    const handleEdit = (article: any) => {
+        setEditingPostId(article.id);
+        setTitle(article.title);
+        setContent(article.content);
+        setCategory(article.category);
+        setImageUrl(article.imageUrl);
+        setIsWriting(true);
+    };
+
+    const handleImageError = (id: string) => {
+        setImageErrors(prev => ({ ...prev, [id]: true }));
     };
 
     const resetForm = () => {
@@ -264,14 +288,14 @@ export function PsychologistBlog() {
                             </div>
 
                             <div style={{ padding: '24px 32px', background: 'var(--co-primary-bg)', borderTop: '1px solid rgba(0,0,0,0.05)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <button className="btn-secondary" onClick={() => { setIsWriting(false); resetForm(); }}>Cancelar</button>
+                                <button className="btn-secondary" onClick={() => { setIsWriting(false); setEditingPostId(null); resetForm(); }}>Cancelar</button>
                                 <button
                                     className="btn-primary"
                                     style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '12px 32px', opacity: !title || !content || isPublishing ? 0.5 : 1 }}
                                     disabled={!title || !content || isPublishing}
                                     onClick={handlePublish}
                                 >
-                                    {isPublishing ? <Loader2 size={18} className="animate-spin" /> : <><Send size={18} /> Publicar Agora</>}
+                                    {isPublishing ? <Loader2 size={18} className="animate-spin" /> : <><Send size={18} /> {editingPostId ? 'Salvar Alterações' : 'Publicar Agora'}</>}
                                 </button>
                             </div>
                         </div>
@@ -290,12 +314,27 @@ export function PsychologistBlog() {
                                 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '340px', gridColumn: 'span 1' }}><Loader2 className="animate-spin" size={32} /></div>
                             ) : (
                                 articles.map(article => (
-                                    <div key={article.id} className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
-                                        <div style={{ height: '160px', background: `url(${getProxyUrl(article.imageUrl)}) center/cover` }} />
+                                    <div key={article.id} className="glass-card" style={{ padding: 0, overflow: 'hidden', position: 'relative' }}>
+                                        {article.imageUrl && !imageErrors[article.id] && (
+                                            <img 
+                                                src={getProxyUrl(article.imageUrl)} 
+                                                alt="Capa"
+                                                onError={() => handleImageError(article.id)}
+                                                style={{ width: '100%', height: '160px', objectFit: 'cover', display: 'block' }}
+                                            />
+                                        )}
                                         <div style={{ padding: '24px' }}>
                                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', fontSize: '0.8rem', color: 'var(--co-text-muted)', fontWeight: 600 }}>
                                                 <span>{new Date(article.createdAt).toLocaleDateString()}</span>
-                                                <span style={{ color: 'var(--co-action)' }}>{article.category}</span>
+                                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                                    <span style={{ color: 'var(--co-action)' }}>{article.category}</span>
+                                                    <button 
+                                                        onClick={() => handleEdit(article)}
+                                                        style={{ background: 'var(--co-lavender)', border: 'none', padding: '4px 8px', borderRadius: '8px', fontSize: '0.7rem', color: 'var(--co-action)', cursor: 'pointer', fontWeight: 700 }}
+                                                    >
+                                                        EDITAR
+                                                    </button>
+                                                </div>
                                             </div>
                                             <h3 style={{ fontSize: '1.25rem', marginBottom: '12px', lineHeight: 1.3 }}>{article.title}</h3>
                                             <p style={{ color: 'var(--co-text-muted)', fontSize: '0.95rem', lineHeight: 1.5 }}>{article.content.substring(0, 100)}...</p>

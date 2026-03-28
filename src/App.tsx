@@ -6,6 +6,8 @@ import { offlineSyncService } from './services/offlineSyncService';
 
 // Layout & Components
 import { BottomNav } from './components/BottomNav';
+import { PsychologistBottomNav } from './components/PsychologistBottomNav';
+import { PsychologistMobileHeader } from './components/PsychologistMobileHeader';
 
 // Patient Pages
 import { Landing } from './pages/Landing';
@@ -63,6 +65,7 @@ function App() {
     <HelmetProvider>
       <Analytics />
       <Router>
+      <PsychologistMobileHeader />
       <div style={{ position: 'relative' }}>
         <Toaster position="top-center" toastOptions={{
           duration: 3000,
@@ -109,6 +112,7 @@ function App() {
           <Route path="/psicologo/financeiro" element={<PsychologistFinancial />} />
         </Routes>
         <BottomNav />
+        <PsychologistBottomNav />
       </div>
       </Router>
     </HelmetProvider>
