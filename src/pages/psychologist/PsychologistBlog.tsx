@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
-import { Plus, Image as ImageIcon, Send, LayoutTemplate, Loader2, X } from 'lucide-react';
+import { Plus, Image as ImageIcon, Send, LayoutTemplate, Loader2, X, MessageCircle, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { getProxyUrl } from '../../utils/fileProxy';
@@ -53,6 +53,12 @@ export function PsychologistBlog() {
     const [isPublishing, setIsPublishing] = useState(false);
     const [editingPostId, setEditingPostId] = useState<string | null>(null);
     const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+    
+    // Comments states
+    const [selectedPostForComments, setSelectedPostForComments] = useState<any | null>(null);
+    const [postComments, setPostComments] = useState<any[]>([]);
+    const [isLoadingComments, setIsLoadingComments] = useState(false);
+    const [responses, setResponses] = useState<Record<string, string>>({});
 
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -145,6 +151,39 @@ export function PsychologistBlog() {
         setCustomCategory('');
         setIsAddingCustomCategory(false);
         setImageUrl('');
+    };
+
+    const fetchPostComments = async (postId: string) => {
+        setIsLoadingComments(true);
+        try {
+            const res = await api.get(`/blog/${postId}/comments`);
+            setPostComments(res.data);
+            // Initialize responses state with existing responses
+            const initialResponses: any = {};
+            res.data.forEach((c: any) => {
+                initialResponses[c.id] = c.response || '';
+            });
+            setResponses(initialResponses);
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao carregar comentários.");
+        } finally {
+            setIsLoadingComments(false);
+        }
+    };
+
+    const handleRespond = async (commentId: string) => {
+        const responseText = responses[commentId];
+        if (!responseText?.trim()) return;
+
+        try {
+            await api.patch(`/blog/comments/${commentId}/respond`, { response: responseText });
+            toast.success("Resposta enviada com sucesso!");
+            fetchPostComments(selectedPostForComments.id);
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao enviar resposta.");
+        }
     };
 
     const applyTemplate = (template: typeof BLOG_TEMPLATES[0]) => {
@@ -337,7 +376,19 @@ export function PsychologistBlog() {
                                                 </div>
                                             </div>
                                             <h3 style={{ fontSize: '1.25rem', marginBottom: '12px', lineHeight: 1.3 }}>{article.title}</h3>
-                                            <p style={{ color: 'var(--co-text-muted)', fontSize: '0.95rem', lineHeight: 1.5 }}>{article.content.substring(0, 100)}...</p>
+                                            <p style={{ color: 'var(--co-text-muted)', fontSize: '0.95rem', lineHeight: 1.5, marginBottom: '20px' }}>{article.content.substring(0, 100)}...</p>
+                                            
+                                            <div style={{ borderTop: '1px solid rgba(0,0,0,0.05)', paddingTop: '16px', display: 'flex', justifyContent: 'center' }}>
+                                                <button 
+                                                    onClick={() => {
+                                                        setSelectedPostForComments(article);
+                                                        fetchPostComments(article.id);
+                                                    }}
+                                                    style={{ background: 'none', border: 'none', color: 'var(--co-action)', fontWeight: 800, fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+                                                >
+                                                    <MessageCircle size={18} /> Ver Comentários
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
                                 ))
@@ -345,6 +396,71 @@ export function PsychologistBlog() {
                         </div>
                     )}
                 </div>
+
+                {/* Comments Sidebar/Modal */}
+                {selectedPostForComments && (
+                    <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)', zIndex: 1000, display: 'flex', justifyContent: 'flex-end' }} onClick={() => setSelectedPostForComments(null)}>
+                        <div 
+                            style={{ width: '100%', maxWidth: '450px', background: 'white', height: '100%', display: 'flex', flexDirection: 'column', boxShadow: '-10px 0 30px rgba(0,0,0,0.1)' }}
+                            onClick={e => e.stopPropagation()}
+                        >
+                            <div style={{ padding: '24px', borderBottom: '1px solid #eee', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <div>
+                                    <h3 style={{ margin: 0, fontSize: '1.2rem' }}>Interações Privadas</h3>
+                                    <p style={{ margin: 0, fontSize: '0.85rem', color: '#666' }}>{selectedPostForComments.title}</p>
+                                </div>
+                                <button onClick={() => setSelectedPostForComments(null)} style={{ background: '#f5f5f5', border: 'none', borderRadius: '50%', padding: '8px', cursor: 'pointer' }}><X size={20} /></button>
+                            </div>
+
+                            <div style={{ flex: 1, overflowY: 'auto', padding: '24px' }}>
+                                {isLoadingComments ? (
+                                    <div style={{ display: 'flex', justifyContent: 'center', padding: '40px' }}><Loader2 className="animate-spin" size={32} /></div>
+                                ) : postComments.length === 0 ? (
+                                    <div style={{ textAlign: 'center', padding: '40px', color: '#999' }}>
+                                        <MessageSquare size={48} style={{ opacity: 0.2, marginBottom: '16px' }} />
+                                        <p>Nenhuma dúvida ou reflexão enviada para este post ainda.</p>
+                                    </div>
+                                ) : (
+                                    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                        {postComments.map(comment => (
+                                            <div key={comment.id} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                        <div style={{ width: '32px', height: '32px', borderRadius: '16px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-action)', fontWeight: 800, fontSize: '0.8rem' }}>
+                                                            {comment.user?.name?.charAt(0) || 'U'}
+                                                        </div>
+                                                        <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{comment.user?.name || 'Usuário'}</span>
+                                                    </div>
+                                                    <span style={{ fontSize: '0.75rem', color: '#999' }}>{new Date(comment.createdAt).toLocaleDateString()}</span>
+                                                </div>
+
+                                                <div style={{ background: '#f9f9f9', padding: '16px', borderRadius: '16px', fontSize: '0.95rem', color: '#333', lineHeight: 1.5 }}>
+                                                    {comment.content}
+                                                </div>
+
+                                                <div style={{ position: 'relative' }}>
+                                                    <textarea 
+                                                        placeholder="Sua resposta exclusiva..."
+                                                        value={responses[comment.id] || ''}
+                                                        onChange={e => setResponses({ ...responses, [comment.id]: e.target.value })}
+                                                        style={{ width: '100%', height: '80px', padding: '12px 16px', borderRadius: '16px', border: '1px solid #ddd', background: '#fff', fontSize: '0.9rem', resize: 'none', transition: 'border 0.2s' }}
+                                                    />
+                                                    <button 
+                                                        onClick={() => handleRespond(comment.id)}
+                                                        disabled={!responses[comment.id]?.trim()}
+                                                        style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'var(--co-action)', color: 'white', border: 'none', borderRadius: '10px', padding: '6px 12px', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', opacity: !responses[comment.id]?.trim() ? 0.5 : 1 }}
+                                                    >
+                                                        Responder
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
             </main>
         </div>
     );

@@ -1,6 +1,9 @@
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowRight, Heart, Clock, ShieldCheck, Star, Flame, Home, Layout, Lock, User, Monitor, Smartphone, Zap } from 'lucide-react';
+import { ArrowRight, Heart, Clock, ShieldCheck, Star, Flame, Home, Layout, Lock, User, Monitor, Smartphone, Zap, BookOpen, Tag } from 'lucide-react';
+import api from '../services/api';
+import { getProxyUrl } from '../utils/fileProxy';
 import logo from '../assets/logopontoevirgula.png';
 import heroImg from '../assets/hero_mental_health.png';
 import neuroImg from '../assets/neuro_brain.png';
@@ -8,6 +11,19 @@ import { SEO } from '../components/SEO';
 
 export function Landing() {
     const navigate = useNavigate();
+    const [recentPosts, setRecentPosts] = useState<any[]>([]);
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            try {
+                const res = await api.get('/blog/public');
+                setRecentPosts(res.data);
+            } catch (error) {
+                console.error("Erro ao buscar posts publicos", error);
+            }
+        };
+        fetchPosts();
+    }, []);
 
     return (
         <div style={{ minHeight: '100vh', background: 'var(--co-primary-bg)', display: 'flex', flexDirection: 'column', overflowX: 'hidden' }}>
@@ -594,6 +610,74 @@ export function Landing() {
                     </button>
                 </section>
             </main>
+
+            {/* Blog/Resources Section */}
+            <section style={{ width: '100%', padding: '80px 24px', background: 'var(--co-primary-bg)', display: 'flex', justifyContent: 'center' }}>
+                <div style={{ maxWidth: '1200px', width: '100%' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px', gap: '20px' }} className="mobile-column">
+                        <div style={{ textAlign: 'left' }}>
+                            <div style={{ color: 'var(--co-action)', fontWeight: 800, fontSize: '0.9rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                <BookOpen size={18} /> CONTEÚDOS EXCLUSIVOS
+                            </div>
+                            <h2 style={{ fontSize: 'var(--fs-h2)', fontWeight: 900, color: 'var(--co-text-dark)', margin: 0, letterSpacing: '-1px' }}>Dicas que transformam.</h2>
+                        </div>
+                        <button 
+                            onClick={() => navigate('/login')}
+                            className="btn-secondary" 
+                            style={{ borderRadius: '100px', padding: '12px 32px', fontWeight: 700, fontSize: '0.95rem' }}
+                        >
+                            Ver todos os artigos
+                        </button>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '32px' }}>
+                        {recentPosts.length > 0 ? recentPosts.map(post => (
+                            <motion.article 
+                                key={post.id}
+                                whileHover={{ y: -8 }}
+                                onClick={() => navigate('/login')}
+                                style={{ 
+                                    background: 'white', 
+                                    borderRadius: '32px', 
+                                    overflow: 'hidden', 
+                                    boxShadow: '0 20px 40px rgba(0,0,0,0.04)', 
+                                    border: '1px solid rgba(0,0,0,0.03)',
+                                    cursor: 'pointer'
+                                }}
+                            >
+                                <div style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
+                                    <img 
+                                        src={getProxyUrl(post.imageUrl) || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80'} 
+                                        alt={post.title}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                    />
+                                    <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
+                                        <span style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--co-action)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                            <Tag size={12} /> {post.category}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div style={{ padding: '32px' }}>
+                                    <div style={{ color: 'var(--co-text-muted)', fontSize: '0.85rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <Clock size={14} /> {new Date(post.createdAt).toLocaleDateString()}
+                                    </div>
+                                    <h3 style={{ fontSize: '1.4rem', fontWeight: 900, color: 'var(--co-text-dark)', marginBottom: '16px', lineHeight: 1.25 }}>{post.title}</h3>
+                                    <p style={{ color: 'var(--co-text-muted)', lineHeight: 1.6, marginBottom: '24px', fontSize: '1rem' }}>{post.content.substring(0, 100)}...</p>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--co-action)', fontWeight: 800, fontSize: '0.95rem' }}>
+                                        Ler artigo completo <ArrowRight size={18} />
+                                    </div>
+                                </div>
+                            </motion.article>
+                        )) : (
+                            [1, 2].map(i => (
+                                <div key={i} style={{ height: '400px', background: 'rgba(255,255,255,0.5)', borderRadius: '32px', border: '2px dashed rgba(0,0,0,0.05)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-text-muted)' }}>
+                                    Carregando conteúdo...
+                                </div>
+                            ))
+                        )}
+                    </div>
+                </div>
+            </section>
 
             <footer style={{ background: '#1A1A1A', padding: '80px 24px 40px', color: 'rgba(255,255,255,0.5)', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '40px' }}>
                 <div style={{ display: 'flex', alignItems: 'center', color: 'white' }}>
