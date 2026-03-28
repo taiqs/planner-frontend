@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ChevronRight, Eye, EyeOff } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
@@ -25,46 +25,62 @@ export function Login() {
     const [name, setName] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-    const [isAlreadyPatient, setIsAlreadyPatient] = useState(false);
+    const [showPatientModal, setShowPatientModal] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (isRegister) {
+            if (!email || !password || !name) {
+                toast.error('Preencha todos os campos!');
+                return;
+            }
+            setShowPatientModal(true);
+        } else {
+            handleLogin();
+        }
+    };
+
+    const handleLogin = async () => {
+        setIsLoading(true);
+        try {
+            const response = await api.post('/auth/login', { email, password });
+            toast.success(`Bem-vindo(a) de volta!`);
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+
+            if (response.data.user.role === 'ADMIN') {
+                navigate('/psicologo/dashboard');
+            } else {
+                navigate('/dashboard');
+            }
+        } catch (error: any) {
+            const errorMsg = error.response?.data?.error || 'Erro ao entrar.';
+            toast.error(errorMsg);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleFinalRegister = async (alreadyPatient: boolean) => {
+        setShowPatientModal(false);
         setIsLoading(true);
 
         try {
-            if (isRegister) {
-                // Rota de Registro
-                const response = await api.post('/auth/register', {
-                    email,
-                    password,
-                    name,
-                    role: 'PATIENT', // Cadastro público é sempre paciente
-                    isAlreadyPatient
-                });
+            const response = await api.post('/auth/register', {
+                email,
+                password,
+                name,
+                role: 'PATIENT',
+                isAlreadyPatient: alreadyPatient
+            });
 
-                toast.success('Conta criada com sucesso!');
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-                navigate('/onboarding'); // Direciona pro onboarding preencher pronomes
-            } else {
-                // Rota de Login
-                const response = await api.post('/auth/login', { email, password });
-
-                toast.success(`Bem-vindo(a) de volta!`);
-                localStorage.setItem('token', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
-
-                // Redirecionamento Baseado no Cargo/Role
-                if (response.data.user.role === 'ADMIN') {
-                    navigate('/psicologo/dashboard');
-                } else {
-                    navigate('/dashboard');
-                }
-            }
+            toast.success('Conta criada com sucesso!');
+            localStorage.setItem('token', response.data.token);
+            localStorage.setItem('user', JSON.stringify(response.data.user));
+            navigate('/onboarding');
         } catch (error: any) {
-            console.error(error);
-            // Capturando o erro nativo do express
-            const errorMsg = error.response?.data?.error || 'Erro ao conectar no servidor. Tente novamente.';
+            const errorMsg = error.response?.data?.error || 'Erro ao criar conta.';
             toast.error(errorMsg);
         } finally {
             setIsLoading(false);
@@ -109,20 +125,6 @@ export function Login() {
                         </div>
                     )}
 
-                    {isRegister && (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '0 8px' }}>
-                            <input
-                                type="checkbox"
-                                id="alreadyPatient"
-                                checked={isAlreadyPatient}
-                                onChange={e => setIsAlreadyPatient(e.target.checked)}
-                                style={{ accentColor: 'var(--co-accent)', width: '18px', height: '18px' }}
-                            />
-                            <label htmlFor="alreadyPatient" className="text-muted" style={{ fontSize: '0.9rem', cursor: 'pointer' }}>
-                                Já sou paciente da Psicóloga Tailiny Quirino
-                            </label>
-                        </div>
-                    )}
 
                     <div style={{ position: 'relative' }}>
                         <Mail size={20} className="text-muted" style={{ position: 'absolute', left: '16px', top: '16px' }} />
@@ -181,6 +183,45 @@ export function Login() {
                     </button>
                 </div>
             </motion.div>
+
+            <AnimatePresence>
+                {showPatientModal && (
+                    <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000, padding: '24px' }}>
+                        <motion.div
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                            style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(4px)' }}
+                            onClick={() => setShowPatientModal(false)}
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                            className="glass-panel"
+                            style={{ position: 'relative', width: '100%', maxWidth: '400px', padding: '32px', textAlign: 'center', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}
+                        >
+                            <h2 style={{ fontSize: '1.25rem', marginBottom: '16px' }}>Uma pergunta rápida...</h2>
+                            <p className="text-muted" style={{ marginBottom: '32px', lineHeight: 1.5 }}>
+                                Você já realiza acompanhamento com a <strong>Psicóloga Tailiny Quirino</strong>?
+                            </p>
+                            
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                <button 
+                                    className="btn-primary" 
+                                    style={{ width: '100%', padding: '16px' }}
+                                    onClick={() => handleFinalRegister(true)}
+                                >
+                                    Sim, já sou paciente
+                                </button>
+                                <button 
+                                    className="btn-secondary" 
+                                    style={{ width: '100%', padding: '16px', border: '1px solid var(--co-accent)', background: 'transparent' }}
+                                    onClick={() => handleFinalRegister(false)}
+                                >
+                                    Não por enquanto
+                                </button>
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

@@ -10,6 +10,7 @@ import { sendPushNotification } from '../utils/notifications';
 import { generateTherapyReport } from '../utils/ReportGenerator';
 import { SEO } from '../components/SEO';
 import { offlineSyncService } from '../services/offlineSyncService';
+import { getProxyUrl } from '../utils/fileProxy';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -17,6 +18,7 @@ export function Dashboard() {
     // Auth & Status State
     const [userName, setUserName] = useState('Paciente');
     const [userInitial, setUserInitial] = useState('P');
+    const [avatarUrl, setAvatarUrl] = useState('');
     const [streak, setStreak] = useState(0);
     const [emergencyEnabled, setEmergencyEnabled] = useState(false);
     const [hasPsychologist, setHasPsychologist] = useState(false);
@@ -75,6 +77,7 @@ export function Dashboard() {
             const user = profileRes.data;
             setUserName(user.name?.split(' ')[0] || 'Paciente');
             setUserInitial(user.name?.charAt(0).toUpperCase() || 'P');
+            setAvatarUrl(user.avatarUrl || '');
             setEmergencyEnabled(user.emergencyEnabled);
             setHasPsychologist(!!user.psychologistId);
             setInterestedInTherapy(!!user.interestedInTherapy);
@@ -190,9 +193,19 @@ export function Dashboard() {
                     </div>
                     <div
                         onClick={() => navigate('/perfil')}
-                        style={{ width: '48px', height: '48px', borderRadius: '24px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', cursor: 'pointer' }}
+                        style={{ 
+                            width: '48px', height: '48px', borderRadius: '24px', 
+                            backgroundColor: 'var(--co-lavender)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            fontWeight: 'bold', cursor: 'pointer', overflow: 'hidden',
+                            border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                        }}
                     >
-                        {userInitial}
+                        {avatarUrl ? (
+                            <img src={getProxyUrl(avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            userInitial
+                        )}
                     </div>
                 </div>
             </header>

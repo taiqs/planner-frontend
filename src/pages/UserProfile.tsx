@@ -109,8 +109,12 @@ export function UserProfile() {
             });
             setAvatarUrl(res.data.url);
             toast.success("Foto carregada. Clique em Salvar Alterações para confirmar!");
-        } catch (error) {
-            toast.error("Erro ao fazer upload da foto.");
+        } catch (error: any) {
+            if (error.response?.status === 413) {
+                toast.error("O arquivo da imagem é muito grande. Tente uma foto menor.");
+            } else {
+                toast.error("Erro ao fazer upload da foto.");
+            }
         } finally {
             setIsUploading(false);
         }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { ChevronRight, Loader2, PenTool, List, Mic } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
@@ -9,6 +9,9 @@ import { offlineSyncService } from '../services/offlineSyncService';
 
 export function Planner() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const queryParams = new URLSearchParams(location.search);
+    const customDate = queryParams.get('date');
 
     const [activeTab, setActiveTab] = useState<'text' | 'guided' | 'voice'>('text');
     
@@ -74,7 +77,8 @@ export function Planner() {
                 situation,
                 automaticThought,
                 emotion,
-                behavior
+                behavior,
+                date: customDate || undefined
             });
             toast.success(isPrivate ? "Salvo no seu Cofre Privado!" : "Reflexão salva e compartilhada!");
             setTimeout(() => navigate('/dashboard'), 1500);
@@ -88,7 +92,8 @@ export function Planner() {
                     situation,
                     automaticThought,
                     emotion,
-                    behavior
+                    behavior,
+                    date: customDate || undefined
                 }, `Reflexão: ${isGuided ? 'Guiada' : 'Livre'}`);
                 
                 toast.success("Salvo offline. Sincronizará quando houver conexão.");
