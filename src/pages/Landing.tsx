@@ -30,6 +30,19 @@ export function Landing() {
                     z-index: 100;
                     box-shadow: 0 0 10px rgba(0,0,0,0.1);
                 }
+                @media (max-width: 850px) {
+                    .grid-mobile-1 { 
+                        grid-template-columns: 1fr !important; 
+                        text-align: center !important;
+                        gap: 32px !important;
+                    }
+                    .mobile-column { flex-direction: column !important; align-items: center !important; text-align: center !important; }
+                    .mobile-padding-card { padding: 40px 24px !important; overflow: hidden !important; border-radius: 32px !important; }
+                    .fs-mobile-h2 { font-size: 2rem !important; margin-bottom: 20px !important; text-align: center !important; }
+                    .mobile-center-all { display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; }
+                    .header-mobile { justify-content: center !important; }
+                    .btn-mobile-full { width: 100% !important; }
+                }
             `}</style>
             {/* Navbar Refatorada */}
             <header
@@ -47,11 +60,11 @@ export function Landing() {
                     width: '100%'
                 }}
             >
-                <div style={{ 
-                    maxWidth: '1200px', 
-                    width: '100%', 
-                    display: 'flex', 
-                    justifyContent: 'space-between', 
+                <div style={{
+                    maxWidth: '1200px',
+                    width: '100%',
+                    display: 'flex',
+                    justifyContent: 'space-between',
                     alignItems: 'center',
                     flexWrap: 'wrap',
                     gap: '12px'
@@ -210,12 +223,14 @@ export function Landing() {
 
                 {/* Features Image Section - Dashboard Mockup */}
                 <section style={{ width: '100%', maxWidth: '1200px', padding: '0 24px', marginBottom: '80px' }}>
-                    <div style={{
-                        width: '100%',
-                        minHeight: '400px',
-                        background: 'linear-gradient(135deg, white 0%, var(--co-lavender) 100%)',
-                        borderRadius: '48px',
-                        padding: '60px 48px',
+                    <div 
+                        className="mobile-padding-card"
+                        style={{
+                            width: '100%',
+                            minHeight: '400px',
+                            background: 'linear-gradient(135deg, white 0%, var(--co-lavender) 100%)',
+                            borderRadius: '48px',
+                            padding: '60px 48px',
                         boxShadow: '0 40px 100px rgba(0,0,0,0.06)',
                         display: 'flex',
                         flexDirection: 'column',
@@ -302,7 +317,7 @@ export function Landing() {
                                                 <Star size={16} color="white" fill="white" />
                                                 <h4 style={{ margin: 0, fontSize: '0.9rem', fontWeight: 800 }}>Neuro-Insights</h4>
                                             </div>
-                                            <p style={{ fontSize: '0.75rem', margin: 0, opacity: 0.9, lineHeight: 1.4 }}>Seu cérebro está demonstrando alta <strong style={{ color: "#FFD54F" }}>resiliência</strong> esta semana!</p>
+                                            <p style={{ fontSize: '0.75rem', margin: 0, opacity: 0.9, lineHeight: 1.4 }}>Descubra seus potenciais. <strong style={{ color: "#FFD54F" }}>Faça o teste</strong> e veja seus novos insights neuropsicológicos.</p>
                                         </div>
 
                                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
@@ -360,7 +375,7 @@ export function Landing() {
                             </div>
 
                             <div style={{ textAlign: 'left' }}>
-                                <h2 style={{ fontSize: '3rem', color: 'var(--co-text-dark)', fontWeight: 900, marginBottom: '24px', letterSpacing: '-1.5px', lineHeight: 1.1 }}>Web App em tempo real.</h2>
+                                <h2 className="fs-mobile-h2" style={{ fontSize: '3rem', color: 'var(--co-text-dark)', fontWeight: 900, marginBottom: '24px', letterSpacing: '-1.5px', lineHeight: 1.1 }}>Web App em tempo real.</h2>
                                 <p style={{ color: 'var(--co-text-muted)', fontSize: '1.25rem', maxWidth: '500px', lineHeight: 1.6, marginBottom: '32px', fontWeight: 500 }}>
                                     Uma interface intuitiva e acolhedora que acompanha você em todos os lugares. <strong style={{ color: 'var(--co-text-dark)' }}>Sua evolução na palma da mão</strong>.
                                 </p>
@@ -459,21 +474,21 @@ export function Landing() {
                 {/* WebApp Anywhere Section */}
                 <section
                     className="section-padding-mobile"
-                    style={{ 
-                        width: '100%', 
-                        padding: '100px 24px', 
-                        display: 'flex', 
+                    style={{
+                        width: '100%',
+                        padding: '100px 24px',
+                        display: 'flex',
                         justifyContent: 'center',
                         background: 'linear-gradient(180deg, white 0%, #FDFDFD 100%)'
                     }}
                 >
                     <div style={{ maxWidth: '1200px', width: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '60px', alignItems: 'center' }}>
-                        <div>
-                            <h2 style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--co-text-dark)', marginBottom: '24px', letterSpacing: '-1.5px', lineHeight: 1.1 }}>Acesse de qualquer lugar.</h2>
+                        <div className="mobile-center-all">
+                            <h2 className="fs-mobile-h2" style={{ fontSize: '2.8rem', fontWeight: 900, color: 'var(--co-text-dark)', marginBottom: '24px', letterSpacing: '-1.5px', lineHeight: 1.1 }}>Acesse de qualquer lugar.</h2>
                             <p style={{ color: 'var(--co-text-muted)', fontSize: '1.2rem', lineHeight: 1.6, marginBottom: '40px' }}>
-                                O Ponto e Vírgula é um <strong style={{color:'var(--co-action)'}}>Web App moderno (PWA)</strong>. Isso significa que você tem a experiência de um aplicativo nativo sem precisar baixar nada na loja.
+                                O Ponto e Vírgula é um <strong style={{ color: 'var(--co-action)' }}>Web App moderno (PWA)</strong>. Isso significa que você tem a experiência de um aplicativo nativo sem precisar baixar nada na loja.
                             </p>
-                            
+
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                                 <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
                                     <div style={{ background: '#E8F5E9', padding: '12px', borderRadius: '16px', color: '#4CAF50' }}><Zap size={24} /></div>
@@ -500,12 +515,12 @@ export function Landing() {
                         </div>
 
                         <div style={{ position: 'relative', display: 'flex', justifyContent: 'center' }}>
-                            <div style={{ 
-                                width: '100%', 
-                                maxWidth: '500px', 
-                                height: '350px', 
-                                background: 'white', 
-                                borderRadius: '40px', 
+                            <div style={{
+                                width: '100%',
+                                maxWidth: '500px',
+                                height: '350px',
+                                background: 'white',
+                                borderRadius: '40px',
                                 boxShadow: '0 30px 60px rgba(0,0,0,0.05)',
                                 border: '1px solid rgba(0,0,0,0.03)',
                                 display: 'flex',
@@ -595,7 +610,7 @@ export function Landing() {
                     <div style={{ display: 'flex', gap: '24px' }}>
                         <Link to="/privacidade" style={{ color: 'inherit', textDecoration: 'none' }}>Privacidade</Link>
                         <Link to="/termos" style={{ color: 'inherit', textDecoration: 'none' }}>Termos</Link>
-                        <a href="mailto:suporte@pontoevirgula.app" style={{ color: 'inherit', textDecoration: 'none' }}>Contato</a>
+                        <a href="mailto:psico.tailinyquirino@gmail.com" style={{ color: 'inherit', textDecoration: 'none' }}>Contato</a>
                     </div>
                 </div>
             </footer>

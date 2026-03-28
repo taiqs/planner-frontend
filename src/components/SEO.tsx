@@ -17,7 +17,7 @@ export function SEO({
 }: SEOProps) {
   const siteName = "Ponto e Vírgula";
   const siteTitle = "Ponto e Vírgula - Diário Psicológico";
-  const defaultDescription = "O Ponto e Vírgula é seu aliado na jornada terapêutica. Organize reflexões, registre áudios e prepare-se para suas sessões com a Dra. Tailiny.";
+  const defaultDescription = "O Ponto e Vírgula é seu aliado na jornada terapêutica. Um Web App (PWA) para organizar reflexões, registrar áudios e preparar sessões. Acesse de qualquer lugar, em qualquer dispositivo.";
 
   const fullTitle = title ? `${title} | ${siteName}` : siteTitle;
   const fullDescription = description || defaultDescription;
@@ -27,7 +27,7 @@ export function SEO({
       {/* Standard Meta Tags */}
       <title>{fullTitle}</title>
       <meta name="description" content={fullDescription} />
-      <meta name="keywords" content="psicanálise, terapia, saúde mental, diário emocional, cofre, psicóloga, autoconhecimento, planner" />
+      <meta name="keywords" content="psicanálise, terapia, saúde mental, diário emocional, cofre, psicóloga, autoconhecimento, planner, PWA, Web App, Neuropsicologia, PDI, acompanhamento terapêutico, sem download" />
       <meta name="author" content="Ponto e Vírgula" />
       <meta name="robots" content="index, follow" />
 
