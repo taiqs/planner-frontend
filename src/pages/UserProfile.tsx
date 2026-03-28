@@ -4,6 +4,10 @@ import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
+import Cropper from 'react-easy-crop';
+import { getCroppedImg } from '../utils/canvasUtils';
+import { motion, AnimatePresence } from 'framer-motion';
+import { X } from 'lucide-react';
 
 export function UserProfile() {
     const navigate = useNavigate();
@@ -21,6 +25,13 @@ export function UserProfile() {
     const [avatarUrl, setAvatarUrl] = useState('');
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    // Crop states
+    const [crop, setCrop] = useState({ x: 0, y: 0 });
+    const [zoom, setZoom] = useState(1);
+    const [croppedAreaPixels, setCroppedAreaPixels] = useState<any>(null);
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+    const [showCropper, setShowCropper] = useState(false);
 
     // Password states
     const [currentPassword, setCurrentPassword] = useState('');
@@ -98,25 +109,43 @@ export function UserProfile() {
     const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files || e.target.files.length === 0) return;
         const file = e.target.files[0];
+        
+        // Ativar o cropper em vez de subir direto
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            setImageSrc(reader.result as string);
+            setShowCropper(true);
+        };
+    };
 
-        const formData = new FormData();
-        formData.append('file', file);
+    const handleSaveCroppedImage = async () => {
+        if (!imageSrc || !croppedAreaPixels) return;
 
         setIsUploading(true);
+        setShowCropper(false);
         try {
+            const croppedImageBlob = await getCroppedImg(imageSrc, croppedAreaPixels);
+            if (!croppedImageBlob) throw new Error("Erro ao gerar imagem recortada");
+
+            const formData = new FormData();
+            formData.append('file', croppedImageBlob, 'avatar.jpg');
+
             const res = await api.post('/upload', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             setAvatarUrl(res.data.url);
-            toast.success("Foto carregada. Clique em Salvar Alterações para confirmar!");
+            toast.success("Foto recortada e carregada com sucesso!");
         } catch (error: any) {
+            console.error(error);
             if (error.response?.status === 413) {
-                toast.error("O arquivo da imagem é muito grande. Tente uma foto menor.");
+                toast.error("O arquivo da imagem é muito grande.");
             } else {
-                toast.error("Erro ao fazer upload da foto.");
+                toast.error("Erro ao processar/enviar a foto.");
             }
         } finally {
             setIsUploading(false);
+            setImageSrc(null);
         }
     };
 
@@ -339,6 +368,84 @@ export function UserProfile() {
             </div>
 
             <button className="btn-secondary" style={{ width: '100%', color: 'var(--co-danger-text)', padding: '16px' }} onClick={handleLogout}>Sair da Conta</button>
+
+            {/* Cropper Modal */}
+            <AnimatePresence>
+                {showCropper && imageSrc && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        style={{
+                            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+                            background: 'rgba(0,0,0,0.85)', zIndex: 2000,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            padding: '24px'
+                        }}
+                    >
+                        <motion.div
+                            initial={{ scale: 0.9, y: 20 }}
+                            animate={{ scale: 1, y: 0 }}
+                            style={{
+                                width: '100%', maxWidth: '500px', background: 'white',
+                                borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column'
+                            }}
+                        >
+                            <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                                <h3 style={{ margin: 0, fontSize: '1.25rem' }}>Recortar Foto</h3>
+                                <button onClick={() => setShowCropper(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}><X /></button>
+                            </div>
+
+                            <div style={{ position: 'relative', width: '100%', height: '350px', background: '#333' }}>
+                                <Cropper
+                                    image={imageSrc}
+                                    crop={crop}
+                                    zoom={zoom}
+                                    aspect={1}
+                                    onCropChange={setCrop}
+                                    onCropComplete={(_, pixels) => setCroppedAreaPixels(pixels)}
+                                    onZoomChange={setZoom}
+                                    cropShape="round"
+                                    showGrid={false}
+                                />
+                            </div>
+
+                            <div style={{ padding: '24px' }}>
+                                <div style={{ marginBottom: '24px' }}>
+                                    <label style={{ fontSize: '0.85rem', color: '#666', marginBottom: '8px', display: 'block' }}>Zoom: {zoom.toFixed(1)}x</label>
+                                    <input
+                                        type="range"
+                                        min={1}
+                                        max={3}
+                                        step={0.1}
+                                        value={zoom}
+                                        onChange={(e) => setZoom(Number(e.target.value))}
+                                        style={{ width: '100%', cursor: 'pointer', accentColor: 'var(--co-accent)' }}
+                                    />
+                                </div>
+
+                                <div style={{ display: 'flex', gap: '12px' }}>
+                                    <button
+                                        className="btn-secondary"
+                                        style={{ flex: 1, padding: '14px', borderRadius: '16px' }}
+                                        onClick={() => setShowCropper(false)}
+                                    >
+                                        Cancelar
+                                    </button>
+                                    <button
+                                        className="btn-primary"
+                                        style={{ flex: 2, padding: '14px', borderRadius: '16px' }}
+                                        onClick={handleSaveCroppedImage}
+                                        disabled={isUploading}
+                                    >
+                                        {isUploading ? <Loader2 className="animate-spin" size={20} /> : 'Concluir Recorte'}
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 }

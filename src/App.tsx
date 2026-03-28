@@ -36,6 +36,7 @@ import { PsychologistAssessments } from './pages/psychologist/PsychologistAssess
 import { PsychologistFinancial } from './pages/psychologist/PsychologistFinancial';
 
 import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from "@vercel/analytics/react"
 
 function App() {
   useEffect(() => {
@@ -60,6 +61,7 @@ function App() {
 
   return (
     <HelmetProvider>
+      <Analytics />
       <Router>
       <div style={{ position: 'relative' }}>
         <Toaster position="top-center" toastOptions={{
