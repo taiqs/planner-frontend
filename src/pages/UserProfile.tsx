@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff, Calendar } from 'lucide-react';
+import { ChevronRight, Loader2, Camera, Lock, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../services/api';
 import { getProxyUrl } from '../utils/fileProxy';
@@ -12,7 +12,6 @@ export function UserProfile() {
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
-    const [isConnectingGoogle, setIsConnectingGoogle] = useState(false);
 
     // Form states
     const [name, setName] = useState('');
@@ -135,6 +134,7 @@ export function UserProfile() {
         }
     };
 
+    /* Oculto por solicitação do usuário
     const handleConnectGoogle = async () => {
         setIsConnectingGoogle(true);
         try {
@@ -148,6 +148,7 @@ export function UserProfile() {
             setIsConnectingGoogle(false);
         }
     };
+    */
 
     const handleLogout = () => {
         localStorage.removeItem('token');
@@ -243,7 +244,7 @@ export function UserProfile() {
                 </div>
             </div>
 
-            {/* Google Calendar Section */}
+{/* Google Calendar Section - Oculto por solicitação do usuário
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
                     <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: '#4285F4', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -269,6 +270,7 @@ export function UserProfile() {
                     </button>
                 </div>
             </div>
+            */}
 
             <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px' }}>
                 <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '24px' }}>

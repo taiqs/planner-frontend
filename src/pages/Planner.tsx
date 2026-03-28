@@ -5,6 +5,7 @@ import toast from 'react-hot-toast';
 import api from '../services/api';
 import { VoiceRecorder } from '../components/VoiceRecorder';
 import { SEO } from '../components/SEO';
+import { offlineSyncService } from '../services/offlineSyncService';
 
 export function Planner() {
     const navigate = useNavigate();
@@ -78,8 +79,24 @@ export function Planner() {
             toast.success(isPrivate ? "Salvo no seu Cofre Privado!" : "Reflexão salva e compartilhada!");
             setTimeout(() => navigate('/dashboard'), 1500);
         } catch (error: any) {
-            console.error(error);
-            toast.error(error.response?.data?.error || "Erro ao salvar reflexão.");
+            if (!error.response) {
+                // Modo Offline
+                offlineSyncService.addToQueue('/vault', 'POST', {
+                    content: isGuided ? `Reflexão Guiada: ${situation}` : content,
+                    isPrivate,
+                    isGuided,
+                    situation,
+                    automaticThought,
+                    emotion,
+                    behavior
+                }, `Reflexão: ${isGuided ? 'Guiada' : 'Livre'}`);
+                
+                toast.success("Salvo offline. Sincronizará quando houver conexão.");
+                setTimeout(() => navigate('/dashboard'), 1500);
+            } else {
+                console.error(error);
+                toast.error(error.response?.data?.error || "Erro ao salvar reflexão.");
+            }
         } finally {
             setIsSaving(false);
         }
@@ -92,7 +109,12 @@ export function Planner() {
                 <button className="btn-secondary" style={{ padding: '10px 14px', borderRadius: '16px' }} onClick={() => navigate('/dashboard')}>
                     <ChevronRight size={20} style={{ transform: 'rotate(180deg)' }} />
                 </button>
-                <h1 style={{ fontSize: '1.5rem' }}>Nova Reflexão</h1>
+                <h1 style={{ fontSize: '1.5rem', margin: 0 }}>Nova Reflexão</h1>
+                {offlineSyncService.hasPendingSync() && (
+                    <span style={{ fontSize: '0.7rem', background: 'var(--co-lavender)', color: 'var(--co-accent)', padding: '2px 8px', borderRadius: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <Loader2 size={10} className="animate-spin" /> Sincronização Pendente
+                    </span>
+                )}
             </header>
 
             <div style={{ display: 'flex', gap: '8px', marginBottom: '24px', background: 'var(--co-bg-light)', padding: '6px', borderRadius: '20px' }}>

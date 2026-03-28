@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import { sendPushNotification } from '../utils/notifications';
 import { generateTherapyReport } from '../utils/ReportGenerator';
 import { SEO } from '../components/SEO';
+import { offlineSyncService } from '../services/offlineSyncService';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -41,6 +42,10 @@ export function Dashboard() {
 
     useEffect(() => {
         loadDashboardData();
+
+        const handleSync = () => loadDashboardData();
+        window.addEventListener('sync-complete', handleSync);
+        return () => window.removeEventListener('sync-complete', handleSync);
     }, []);
 
     const handleExportReport = async () => {
@@ -140,7 +145,20 @@ export function Dashboard() {
             setLoggedToday(true); // Esconde o painel principal na hora
             loadDashboardData(); // Recarrega o streak pra ver se aumentou
         } catch (error: any) {
-            toast.error(error.response?.data?.error || 'Erro ao registrar humor.');
+            if (!error.response) {
+                // Erro de rede / Offline
+                offlineSyncService.addToQueue('/mood', 'POST', {
+                    mainMood: selectedMainMood,
+                    subEmotions: [selectedSubEmotion],
+                    moodSwing: moodSwing,
+                    notes: moodNotes
+                }, `Humor: ${selectedMainMood}`);
+                
+                setSelectedMainMood(null);
+                setLoggedToday(true);
+            } else {
+                toast.error(error.response?.data?.error || 'Erro ao registrar humor.');
+            }
         } finally {
             setSavingMood(false);
         }
@@ -156,7 +174,14 @@ export function Dashboard() {
             <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px', paddingTop: '16px' }}>
                 <div>
                     <h1 style={{ fontSize: '1.5rem' }}>Olá, {userName}</h1>
-                    <p className="text-muted">Como você está se sentindo hoje?</p>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <p className="text-muted" style={{ margin: 0 }}>Como você está se sentindo hoje?</p>
+                        {offlineSyncService.hasPendingSync() && (
+                            <span style={{ fontSize: '0.7rem', background: 'var(--co-lavender)', color: 'var(--co-accent)', padding: '2px 8px', borderRadius: '10px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                <Loader2 size={10} className="animate-spin" /> Sincronização Pendente
+                            </span>
+                        )}
+                    </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px', background: 'var(--co-white)', padding: '6px 12px', borderRadius: '20px', border: '1px solid rgba(0,0,0,0.05)', boxShadow: '0 2px 8px rgba(0,0,0,0.02)' }}>

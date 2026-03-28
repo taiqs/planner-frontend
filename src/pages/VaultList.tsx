@@ -51,6 +51,12 @@ export function VaultList() {
         if (isUnlocked) {
             loadVaults();
         }
+
+        const handleSync = () => {
+            if (isUnlocked) loadVaults();
+        };
+        window.addEventListener('sync-complete', handleSync);
+        return () => window.removeEventListener('sync-complete', handleSync);
     }, [isUnlocked]);
 
     const loadVaults = async () => {

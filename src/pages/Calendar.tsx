@@ -6,6 +6,7 @@ import { LineChart, Line, ResponsiveContainer, Tooltip } from 'recharts';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import toast from 'react-hot-toast';
 import api from '../services/api';
+import { offlineSyncService } from '../services/offlineSyncService';
 
 // Mapeamento de Humor Base para Nível (1 a 5) para o Gráfico
 const MOOD_LEVELS: Record<string, number> = {
@@ -43,6 +44,10 @@ export function Calendar() {
 
     useEffect(() => {
         loadHistory();
+
+        const handleSync = () => loadHistory();
+        window.addEventListener('sync-complete', handleSync);
+        return () => window.removeEventListener('sync-complete', handleSync);
     }, []);
 
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -126,8 +131,20 @@ export function Calendar() {
             setIsAddingMood(false);
             loadHistory();
         } catch (error: any) {
-            console.error(error);
-            toast.error(error.response?.data?.error || "Erro ao registrar");
+            if (!error.response) {
+                offlineSyncService.addToQueue('/mood', 'POST', {
+                    mainMood: selectedMainMood,
+                    subEmotions: [selectedSubEmotion],
+                    moodSwing: moodSwing,
+                    notes: moodNotes
+                }, `Humor: ${selectedMainMood}`);
+                
+                setSelectedMainMood(null);
+                setIsAddingMood(false);
+            } else {
+                console.error(error);
+                toast.error(error.response?.data?.error || "Erro ao registrar");
+            }
         } finally {
             setSavingMood(false);
         }

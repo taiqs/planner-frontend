@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { ArrowRight, Heart, Brain, Clock, ShieldCheck, Star } from 'lucide-react';
 import logo from '../assets/logopontoevirgula.png';
 import { SEO } from '../components/SEO';
@@ -362,9 +362,9 @@ export function Landing() {
                 <div style={{ borderTop: '1px solid rgba(255,255,255,0.1)', width: '100%', maxWidth: '1000px', paddingTop: '40px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '20px', fontSize: '0.9rem' }}>
                     <span>&copy; {new Date().getFullYear()} Ponto e Vírgula.</span>
                     <div style={{ display: 'flex', gap: '24px' }}>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Privacidade</a>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Termos</a>
-                        <a href="#" style={{ color: 'inherit', textDecoration: 'none' }}>Contato</a>
+                        <Link to="/privacidade" style={{ color: 'inherit', textDecoration: 'none' }}>Privacidade</Link>
+                        <Link to="/termos" style={{ color: 'inherit', textDecoration: 'none' }}>Termos</Link>
+                        <a href="mailto:suporte@pontoevirgula.app" style={{ color: 'inherit', textDecoration: 'none' }}>Contato</a>
                     </div>
                 </div>
             </footer>

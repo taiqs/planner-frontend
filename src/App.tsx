@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { requestNotificationPermission } from './utils/notifications';
+import { offlineSyncService } from './services/offlineSyncService';
 
 // Layout & Components
 import { BottomNav } from './components/BottomNav';
@@ -22,6 +23,8 @@ import { Grounding } from './pages/Grounding';
 import { Blog } from './pages/Blog';
 import { AssessmentQuiz } from './pages/AssessmentQuiz';
 import { NeuroEvalInfo } from './pages/NeuroEvalInfo';
+import { PrivacyPolicy } from './pages/PrivacyPolicy';
+import { TermsOfUse } from './pages/TermsOfUse';
 
 // Psychologist Pages
 import { PsychologistDashboard } from './pages/psychologist/PsychologistDashboard';
@@ -37,6 +40,22 @@ import { HelmetProvider } from 'react-helmet-async';
 function App() {
   useEffect(() => {
     requestNotificationPermission();
+
+    // Sincronização offline
+    const handleOnline = () => {
+      offlineSyncService.processQueue();
+    };
+
+    window.addEventListener('online', handleOnline);
+    
+    // Tenta processar ao abrir o app se já estiver online
+    if (navigator.onLine) {
+      offlineSyncService.processQueue();
+    }
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+    };
   }, []);
 
   return (
@@ -76,6 +95,8 @@ function App() {
           <Route path="/blog" element={<Blog />} />
           <Route path="/assessment" element={<AssessmentQuiz />} />
           <Route path="/avaliacao-neuropsicologica" element={<NeuroEvalInfo />} />
+          <Route path="/privacidade" element={<PrivacyPolicy />} />
+          <Route path="/termos" element={<TermsOfUse />} />
 
           <Route path="/psicologo/dashboard" element={<PsychologistDashboard />} />
           <Route path="/psicologo/pacientes" element={<PsychologistPatients />} />
