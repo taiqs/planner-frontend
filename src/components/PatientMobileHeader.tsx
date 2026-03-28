@@ -16,7 +16,8 @@ export function PatientMobileHeader() {
     const fetchNotifications = async () => {
         try {
             const res = await api.get('/notifications');
-            setNotifications(res.data);
+            // O backend retorna { notifications: [], unreadCount: X }
+            setNotifications(res.data.notifications || []);
         } catch (error) {
             console.error("Erro ao buscar notificações", error);
         }
