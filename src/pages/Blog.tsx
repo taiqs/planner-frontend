@@ -231,7 +231,7 @@ export function Blog() {
                                     {/* Comment List */}
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', paddingBottom: '40px' }}>
                                         {comments.length === 0 ? (
-                                            <p style={{ textAlign: 'center', color: 'var(--co-text-muted)', fontSize: '0.9rem' }}>Nenhuma interação ainda. Seja o primeiro a refletir sobre este tema!</p>
+                                            <p style={{ textAlign: 'center', color: 'var(--co-text-muted)', fontSize: '0.9rem' }}>Você ainda não enviou nenhuma reflexão sobre este tema.</p>
                                         ) : comments.map(comment => (
                                             <div key={comment.id} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                                                 {/* User Comment */}
