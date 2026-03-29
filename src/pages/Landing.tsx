@@ -478,6 +478,93 @@ export function Landing() {
                     </div>
                 </section>
 
+                {/* Security Section */}
+                <section
+                    style={{
+                        width: '100%',
+                        padding: '100px 24px',
+                        background: 'linear-gradient(180deg, var(--co-primary-bg) 0%, white 100%)',
+                        display: 'flex',
+                        justifyContent: 'center'
+                    }}
+                >
+                    <div
+                        className="mobile-padding-card"
+                        style={{
+                            maxWidth: '1100px',
+                            width: '100%',
+                            background: '#1A1A1A',
+                            borderRadius: '48px',
+                            padding: '80px 60px',
+                            color: 'white',
+                            position: 'relative',
+                            overflow: 'hidden',
+                            boxShadow: '0 40px 80px rgba(0,0,0,0.15)'
+                        }}
+                    >
+                        {/* Decorative glow */}
+                        <div style={{ position: 'absolute', top: '-100px', right: '-100px', width: '300px', height: '300px', background: 'var(--co-action)', borderRadius: '50%', filter: 'blur(100px)', opacity: 0.2 }}></div>
+                        
+                        <div className="grid-mobile-1" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '60px', alignItems: 'center', position: 'relative', zIndex: 1 }}>
+                            <div style={{ textAlign: 'left' }}>
+                                <div style={{ 
+                                    display: 'inline-flex', alignItems: 'center', gap: '8px', 
+                                    background: 'rgba(255,255,255,0.1)', padding: '8px 20px', 
+                                    borderRadius: '100px', marginBottom: '24px', fontSize: '0.85rem', fontWeight: 700 
+                                }}>
+                                    <Lock size={16} color="var(--co-accent)" /> PRIVACIDADE ABSOLUTA
+                                </div>
+                                <h2 style={{ fontSize: '2.8rem', fontWeight: 900, marginBottom: '24px', color: 'white', letterSpacing: '-1.5px', lineHeight: 1.1, textAlign: 'left' }}>Sua Fortaleza Digital de Saúde Mental.</h2>
+                                <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: '1.2rem', lineHeight: 1.6, marginBottom: '40px', textAlign: 'left' }}>
+                                    Entendemos que seus relatos e emoções são extremamente sensíveis. Por isso, aplicamos camadas de proteção de nível bancário em cada bit de informação.
+                                </p>
+                                
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                                    {[
+                                        { icon: <ShieldCheck size={24} />, title: "Criptografia de Repouso", desc: "Seus dados são embaralhados no servidor e só podem ser lidos por você e seu terapeuta." },
+                                        { icon: <User size={24} />, title: "Controle de Acesso", desc: "Autenticação rigorosa e proteção por PIN no seu cofre pessoal de reflexões." },
+                                        { icon: <Zap size={24} />, title: "Infraestrutura Blindada", desc: "Proteção contra ataques externos e monitoramento constante de integridade." }
+                                    ].map((item, i) => (
+                                        <div key={i} style={{ display: 'flex', gap: '20px', textAlign: 'left' }}>
+                                            <div style={{ width: '48px', height: '48px', borderRadius: '16px', background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--co-accent)', flexShrink: 0 }}>
+                                                {item.icon}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: 800 }}>{item.title}</h4>
+                                                <p style={{ margin: 0, fontSize: '0.95rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.4 }}>{item.desc}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            
+                            <div style={{ display: 'flex', justifyContent: 'center', position: 'relative' }}>
+                                <div style={{ 
+                                    width: '100%', maxWidth: '400px', 
+                                    background: 'rgba(255,255,255,0.03)', borderRadius: '40px', 
+                                    border: '1px solid rgba(255,255,255,0.1)', display: 'flex', 
+                                    flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                                    padding: '60px 40px', gap: '24px', textAlign: 'center'
+                                }}>
+                                    <motion.div
+                                        animate={{ scale: [1, 1.2, 1], opacity: [0.2, 0.4, 0.2] }}
+                                        transition={{ duration: 4, repeat: Infinity }}
+                                        style={{ width: '150px', height: '150px', borderRadius: '50%', background: 'var(--co-accent)', filter: 'blur(40px)', position: 'absolute' }}
+                                    />
+                                    <ShieldCheck size={100} color="var(--co-accent)" style={{ position: 'relative' }} />
+                                    <div style={{ position: 'relative' }}>
+                                        <h4 style={{ fontSize: '1.8rem', fontWeight: 900, margin: '10px 0 5px', color: 'white' }}>Dados Blindados</h4>
+                                        <p style={{ fontSize: '1rem', color: 'rgba(255,255,255,0.5)' }}>100% dos dados sensíveis são criptografados (AES-256)</p>
+                                    </div>
+                                    <div style={{ padding: '10px 24px', borderRadius: '100px', background: 'rgba(76, 175, 80, 0.1)', color: '#81C784', fontSize: '0.85rem', fontWeight: 800, border: '1px solid rgba(76, 175, 80, 0.2)' }}>
+                                        SISTEMA MONITORADO
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Benefits Section */}
                 <section
                     className="section-padding-mobile"
