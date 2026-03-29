@@ -755,18 +755,25 @@ export function Landing() {
                                     cursor: 'pointer'
                                 }}
                             >
-                                <div style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
-                                    <img 
-                                        src={getProxyUrl(post.imageUrl) || 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&q=80'} 
-                                        alt={post.title}
-                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                    />
-                                    <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
-                                        <span style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--co-action)', display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                            <Tag size={12} /> {post.category}
-                                        </span>
+                                {post.imageUrl && (
+                                    <div style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
+                                        <img 
+                                            src={getProxyUrl(post.imageUrl)} 
+                                            alt={post.title}
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                            onError={(e) => {
+                                                const target = e.currentTarget;
+                                                const parent = target.parentElement;
+                                                if (parent) parent.style.display = 'none';
+                                            }}
+                                        />
+                                        <div style={{ position: 'absolute', top: '20px', left: '20px' }}>
+                                            <span style={{ background: 'rgba(255,255,255,0.9)', backdropFilter: 'blur(100px)', padding: '6px 16px', borderRadius: '100px', fontSize: '0.75rem', fontWeight: 800, color: 'var(--co-action)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <Tag size={12} /> {post.category}
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
+                                )}
                                 <div style={{ padding: '32px' }}>
                                     <div style={{ color: 'var(--co-text-muted)', fontSize: '0.85rem', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                                         <Clock size={14} /> {new Date(post.createdAt).toLocaleDateString()}
