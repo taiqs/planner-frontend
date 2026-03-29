@@ -20,7 +20,18 @@ export function NotificationCenter({ isOpen, onClose, notifications, onMarkAsRea
     return (
         <AnimatePresence>
             {isOpen && (
-                <>
+                <div style={{
+                    position: 'fixed',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    zIndex: 2000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px'
+                }}>
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -28,138 +39,151 @@ export function NotificationCenter({ isOpen, onClose, notifications, onMarkAsRea
                         exit={{ opacity: 0 }}
                         onClick={onClose}
                         style={{
-                            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-                            background: 'rgba(0,0,0,0.3)', backdropFilter: 'blur(4px)',
-                            zIndex: 1100
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            background: 'rgba(0,0,0,0.5)',
+                            backdropFilter: 'blur(10px)',
                         }}
                     />
                     
                     {/* Modal */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.9, y: 30 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 30 }}
+                        onClick={(e) => e.stopPropagation()}
                         style={{
-                            position: 'fixed',
-                            top: '50%',
-                            left: '50%',
-                            transform: 'translate(-50%, -50%)',
-                            width: '90%',
-                            maxWidth: '400px',
+                            position: 'relative',
+                            width: '100%',
+                            maxWidth: '440px',
                             backgroundColor: 'white',
                             borderRadius: '32px',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-                            zIndex: 1101,
-                            maxHeight: '80vh',
+                            boxShadow: '0 40px 100px rgba(0,0,0,0.3)',
+                            maxHeight: '85vh',
                             display: 'flex',
                             flexDirection: 'column',
                             overflow: 'hidden',
                             border: '1px solid rgba(0,0,0,0.05)'
                         }}
                     >
+                        {/* Header */}
                         <div style={{ 
-                            padding: '24px', 
-                            borderBottom: '1px solid #f0f0f0', 
+                            padding: '24px 28px', 
+                            borderBottom: '1px solid #f2f2f2', 
                             display: 'flex', 
                             justifyContent: 'space-between', 
                             alignItems: 'center',
-                            background: 'white'
+                            background: 'white',
+                            zIndex: 10
                         }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
                                 <div style={{ 
-                                    width: '36px', height: '36px', borderRadius: '12px', 
+                                    width: '44px', height: '44px', borderRadius: '15px', 
                                     background: 'var(--co-lavender)', display: 'flex', 
                                     alignItems: 'center', justifyContent: 'center' 
                                 }}>
-                                    <Bell size={20} color="var(--co-accent)" />
+                                    <Bell size={24} color="var(--co-accent)" />
                                 </div>
-                                <h3 style={{ fontSize: '1.2rem', margin: 0, fontWeight: 800 }}>Notificações</h3>
+                                <h3 style={{ fontSize: '1.3rem', margin: 0, fontWeight: 900, letterSpacing: '-0.5px', color: 'var(--co-text-dark)' }}>Notificações</h3>
                             </div>
                             <button 
                                 onClick={onClose} 
                                 style={{ 
-                                    background: '#f5f5f5', border: 'none', 
-                                    borderRadius: '50%', width: '36px', height: '36px',
+                                    background: '#f8f8f8', border: 'none', 
+                                    borderRadius: '50%', width: '40px', height: '40px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                    cursor: 'pointer'
+                                    cursor: 'pointer', transition: 'all 0.2s',
+                                    color: '#666'
                                 }}
                             >
-                                <X size={20} />
+                                <X size={22} />
                             </button>
                         </div>
 
-                        <div style={{ overflowY: 'auto', flex: 1, padding: '8px 0' }}>
+                        {/* Content */}
+                        <div style={{ overflowY: 'auto', flex: 1, padding: '10px 0' }}>
                             {notifications.length === 0 ? (
                                 <div style={{ 
-                                    padding: '60px 20px', textAlign: 'center', 
+                                    padding: '80px 40px', textAlign: 'center', 
                                     color: 'var(--co-text-muted)', display: 'flex', 
-                                    flexDirection: 'column', alignItems: 'center', gap: '12px' 
+                                    flexDirection: 'column', alignItems: 'center', gap: '16px' 
                                 }}>
-                                    <Bell size={48} style={{ opacity: 0.05 }} />
-                                    <p style={{ margin: 0, fontSize: '1rem', fontWeight: 500 }}>Nenhuma notificação por enquanto.</p>
-                                    <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.7 }}>Avisaremos quando algo novo aparecer!</p>
+                                    <div style={{ position: 'relative' }}>
+                                        <Bell size={64} style={{ opacity: 0.03 }} />
+                                        <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', width: '80px', height: '80px', background: 'var(--co-lavender)', borderRadius: '50%', opacity: 0.1, filter: 'blur(20px)' }} />
+                                    </div>
+                                    <div>
+                                        <p style={{ margin: '0 0 4px 0', fontSize: '1.1rem', fontWeight: 700, color: 'var(--co-text-dark)' }}>Nenhum alerta novo</p>
+                                        <p style={{ margin: 0, fontSize: '0.9rem', opacity: 0.7 }}>Avisaremos você assim que houver novidades sobre sua jornada.</p>
+                                    </div>
                                 </div>
                             ) : (
                                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                                     {notifications.map(n => (
-                                        <div 
-                                            key={n.id} 
+                                        <motion.div 
+                                            key={n.id}
+                                            whileHover={{ backgroundColor: 'rgba(0,0,0,0.01)' }}
                                             style={{ 
-                                                padding: '20px 24px', 
+                                                padding: '24px 28px', 
                                                 borderBottom: '1px solid #f8f8f8', 
-                                                background: n.read ? 'white' : 'rgba(166,124,255,0.04)', 
+                                                background: n.read ? 'white' : 'rgba(166,124,255,0.03)', 
                                                 transition: 'all 0.2s',
                                                 cursor: 'pointer',
                                                 position: 'relative'
                                             }}
                                             onClick={() => !n.read && onMarkAsRead(n.id)}
                                         >
-                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'flex-start' }}>
+                                            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px', alignItems: 'flex-start', gap: '12px' }}>
                                                 <span style={{ 
                                                     fontWeight: n.read ? 600 : 800, 
-                                                    fontSize: '1rem', 
+                                                    fontSize: '1.05rem', 
                                                     color: 'var(--co-text-dark)', 
-                                                    flex: 1, paddingRight: '12px',
-                                                    lineHeight: 1.3
+                                                    flex: 1,
+                                                    lineHeight: 1.3,
+                                                    letterSpacing: '-0.3px'
                                                 }}>
                                                     {n.title}
                                                 </span>
                                                 {!n.read && (
                                                     <div style={{ 
-                                                        width: '10px', height: '10px', borderRadius: '5px', 
-                                                        background: 'var(--co-action)', marginTop: '4px',
-                                                        boxShadow: '0 0 10px rgba(166,124,255,0.4)'
+                                                        width: '10px', height: '10px', borderRadius: '50%', 
+                                                        background: 'var(--co-action)', marginTop: '5px',
+                                                        boxShadow: '0 0 12px rgba(166,124,255,0.5)',
+                                                        flexShrink: 0
                                                     }} />
                                                 )}
                                             </div>
                                             <p style={{ 
-                                                fontSize: '0.9rem', 
+                                                fontSize: '0.95rem', 
                                                 color: 'var(--co-text-muted)', 
-                                                margin: 0, 
+                                                margin: '0 0 16px 0', 
                                                 lineHeight: 1.5,
-                                                opacity: n.read ? 0.7 : 1
+                                                opacity: n.read ? 0.7 : 0.9
                                             }}>{n.content}</p>
                                             
                                             <div style={{ 
                                                 display: 'flex', justifyContent: 'space-between', 
-                                                alignItems: 'center', marginTop: '12px' 
+                                                alignItems: 'center' 
                                             }}>
-                                                <span style={{ fontSize: '0.75rem', color: '#bbb' }}>
-                                                    {new Date(n.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}
+                                                <span style={{ fontSize: '0.8rem', color: '#bbb', fontWeight: 500 }}>
+                                                    {new Date(n.createdAt).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                                 {!n.read && (
-                                                    <span style={{ fontSize: '0.7rem', color: 'var(--co-action)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px' }}>
-                                                        <CheckCircle2 size={12} /> Marcar como lida
+                                                    <span style={{ fontSize: '0.8rem', color: 'var(--co-action)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                        <CheckCircle2 size={14} /> Marcar como lida
                                                     </span>
                                                 )}
                                             </div>
-                                        </div>
+                                        </motion.div>
                                     ))}
                                 </div>
                             )}
                         </div>
                     </motion.div>
-                </>
+                </div>
             )}
         </AnimatePresence>
     );
