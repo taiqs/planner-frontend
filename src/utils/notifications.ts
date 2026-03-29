@@ -47,6 +47,29 @@ export const requestNotificationPermission = async () => {
     }
 };
 
+export const getNotificationStatus = () => {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        return 'unsupported';
+    }
+    return Notification.permission;
+};
+
+export const unsubscribeFromPush = async () => {
+    try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
+        if (subscription) {
+            await subscription.unsubscribe();
+            await api.post('/user/push-subscription', { subscription: null });
+            return true;
+        }
+        return false;
+    } catch (error) {
+        console.error("Erro ao desinscrever do push", error);
+        return false;
+    }
+};
+
 export const sendPushNotification = () => {
     // Agora isso é feito pelo Backend Jobs
 };

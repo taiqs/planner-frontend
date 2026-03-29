@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, HeartPulse, Loader2 } from 'lucide-react';
+import { User, HeartPulse, Loader2, Check, Bell } from 'lucide-react';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+import { requestNotificationPermission } from '../utils/notifications';
 
 export function Onboarding() {
     const navigate = useNavigate();
@@ -12,6 +13,7 @@ export function Onboarding() {
     const [birthDate, setBirthDate] = useState('');
     const [phone, setPhone] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
     useEffect(() => {
         // Pré-carrega o nome se foi definido no registro
@@ -51,6 +53,11 @@ export function Onboarding() {
             localStorage.setItem('user', JSON.stringify(response.data));
 
             toast.success("Perfil atualizado! Vamos começar.");
+            
+            if (notificationsEnabled) {
+                await requestNotificationPermission();
+            }
+
             navigate('/dashboard');
         } catch (error: any) {
             console.error(error);
@@ -126,6 +133,39 @@ export function Onboarding() {
                             onChange={handlePhoneChange}
                             required
                         />
+                    </div>
+
+                    <div 
+                        style={{ 
+                            background: 'rgba(166,124,255,0.05)', 
+                            padding: '16px', 
+                            borderRadius: '16px', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: '12px',
+                            cursor: 'pointer',
+                            border: '1px solid rgba(166,124,255,0.1)'
+                        }}
+                        onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                    >
+                        <div style={{ 
+                            width: '24px', 
+                            height: '24px', 
+                            borderRadius: '6px', 
+                            border: '2px solid var(--co-accent)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: notificationsEnabled ? 'var(--co-accent)' : 'transparent',
+                            transition: 'all 0.2s ease'
+                        }}>
+                            {notificationsEnabled && <Check size={16} color="white" />}
+                        </div>
+                        <div style={{ flex: 1 }}>
+                            <p style={{ fontSize: '0.9rem', fontWeight: 600, marginBottom: '2px' }}>Ativar Notificações</p>
+                            <p style={{ fontSize: '0.75rem', color: 'var(--co-text-muted)' }}>Receba lembretes de sessões e mensagens da sua psicóloga.</p>
+                        </div>
+                        <Bell size={20} color="var(--co-accent)" opacity={notificationsEnabled ? 1 : 0.4} />
                     </div>
 
                     <button

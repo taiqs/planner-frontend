@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles, Brain, FileText } from 'lucide-react';
+import { ChevronRight, Calendar as CalendarIcon, MessageSquare, ShieldAlert, Check, X, Loader2, Flame, BookOpen, Download, Sparkles, Brain, FileText, Bell } from 'lucide-react';
 import { usePWAInstall } from '../hooks/usePWAInstall';
 import { MOOD_CATEGORIES } from '../utils/constants';
 import api from '../services/api';
@@ -11,6 +11,7 @@ import { generateTherapyReport } from '../utils/ReportGenerator';
 import { SEO } from '../components/SEO';
 import { offlineSyncService } from '../services/offlineSyncService';
 import { getProxyUrl } from '../utils/fileProxy';
+import { getNotificationStatus, requestNotificationPermission } from '../utils/notifications';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -28,6 +29,7 @@ export function Dashboard() {
     const [nextAppointment, setNextAppointment] = useState<any>(null);
     const [isLoadingData, setIsLoadingData] = useState(true);
     const [hasRecentAssessment, setHasRecentAssessment] = useState(false);
+    const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
     // Estado para o fluxo de registro de humor
     const [loggedToday, setLoggedToday] = useState(false);
@@ -47,6 +49,14 @@ export function Dashboard() {
 
         const handleSync = () => loadDashboardData();
         window.addEventListener('sync-complete', handleSync);
+
+        // Verifica status de notificação para o banner de convite
+        const status = getNotificationStatus();
+        const dismissed = localStorage.getItem('hide_notification_banner');
+        if (status === 'default' && !dismissed) {
+            setShowNotificationBanner(true);
+        }
+
         return () => window.removeEventListener('sync-complete', handleSync);
     }, []);
 
@@ -167,6 +177,21 @@ export function Dashboard() {
         }
     };
 
+    const handleActivateNotifications = async () => {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+            setShowNotificationBanner(false);
+            toast.success("Notificações ativadas!");
+        } else {
+            toast.error("Não foi possível ativar as notificações.");
+        }
+    };
+
+    const handleDismissNotificationBanner = () => {
+        setShowNotificationBanner(false);
+        localStorage.setItem('hide_notification_banner', 'true');
+    };
+
     if (isLoadingData) {
         return <div style={{ display: 'flex', height: '100vh', alignItems: 'center', justifyContent: 'center' }}><Loader2 className="animate-spin" size={32} color="var(--co-accent)" /></div>
     }
@@ -209,6 +234,54 @@ export function Dashboard() {
                     </div>
                 </div>
             </header>
+
+            <AnimatePresence>
+                {showNotificationBanner && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        style={{ overflow: 'hidden' }}
+                    >
+                        <div 
+                            className="glass-panel" 
+                            style={{ 
+                                padding: '16px 20px', 
+                                marginBottom: '24px', 
+                                background: 'rgba(166,124,255,0.08)', 
+                                border: '1px solid rgba(166,124,255,0.2)',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '16px',
+                                position: 'relative'
+                            }}
+                        >
+                            <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                <Bell size={22} color="var(--co-accent)" />
+                            </div>
+                            <div style={{ flex: 1 }}>
+                                <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '2px' }}>Ative as Notificações</h3>
+                                <p className="text-muted" style={{ fontSize: '0.8rem', lineHeight: 1.4 }}>Não perca lembretes de sessões e mensagens importantes da sua psicóloga.</p>
+                            </div>
+                            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                <button 
+                                    className="btn-primary" 
+                                    style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '10px' }}
+                                    onClick={handleActivateNotifications}
+                                >
+                                    Ativar
+                                </button>
+                                <button 
+                                    style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--co-text-muted)' }}
+                                    onClick={handleDismissNotificationBanner}
+                                >
+                                    <X size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {(isInstallable || (isIOS && !isInstalled)) && (
                 <motion.div

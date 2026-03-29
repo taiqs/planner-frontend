@@ -1,14 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight, ShieldAlert, Loader2 } from 'lucide-react';
+import { ChevronRight, ShieldAlert, Loader2, Bell, X } from 'lucide-react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
 import api from '../../services/api';
+import toast from 'react-hot-toast';
+import { getNotificationStatus, requestNotificationPermission } from '../../utils/notifications';
+import { AnimatePresence } from 'framer-motion';
 
 export function PsychologistDashboard() {
     const navigate = useNavigate();
     const [patients, setPatients] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [showNotificationBanner, setShowNotificationBanner] = useState(false);
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -22,10 +26,32 @@ export function PsychologistDashboard() {
             }
         };
         fetchPatients();
+
+        // Verifica status de notificação para o banner de convite
+        const status = getNotificationStatus();
+        const dismissed = localStorage.getItem('hide_notification_banner_psi');
+        if (status === 'default' && !dismissed) {
+            setShowNotificationBanner(true);
+        }
     }, []);
 
     // Simulação: se tem botão ativado, mostrar um painel de alerta (MVP Fake Trigger)
     const hasEmergencyEnabled = patients.some(p => p.emergencyEnabled);
+
+    const handleActivateNotifications = async () => {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+            setShowNotificationBanner(false);
+            toast.success("Notificações ativadas!");
+        } else {
+            toast.error("Não foi possível ativar as notificações.");
+        }
+    };
+
+    const handleDismissNotificationBanner = () => {
+        setShowNotificationBanner(false);
+        localStorage.setItem('hide_notification_banner_psi', 'true');
+    };
 
     return (
         <div className="psi-layout">
@@ -36,6 +62,54 @@ export function PsychologistDashboard() {
                     <h1 style={{ fontSize: '1.8rem' }}>Visão Geral</h1>
                     <p className="text-muted">Acompanhe seus alertas e seus pacientes recentes.</p>
                 </header>
+
+                <AnimatePresence>
+                    {showNotificationBanner && (
+                        <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: 'auto', opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            style={{ overflow: 'hidden' }}
+                        >
+                            <div 
+                                className="glass-panel" 
+                                style={{ 
+                                    padding: '16px 20px', 
+                                    marginBottom: '32px', 
+                                    background: 'rgba(166,124,255,0.08)', 
+                                    border: '1px solid rgba(166,124,255,0.2)',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '16px',
+                                    position: 'relative'
+                                }}
+                            >
+                                <div style={{ width: '44px', height: '44px', borderRadius: '12px', background: 'var(--co-lavender)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                                    <Bell size={22} color="var(--co-accent)" />
+                                </div>
+                                <div style={{ flex: 1 }}>
+                                    <h3 style={{ fontSize: '0.95rem', fontWeight: 700, marginBottom: '2px' }}>Ative as Notificações Profissionais</h3>
+                                    <p className="text-muted" style={{ fontSize: '0.8rem', lineHeight: 1.4 }}>Receba alertas em tempo real de novos comentários e chamadas de emergência.</p>
+                                </div>
+                                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                                    <button 
+                                        className="btn-primary" 
+                                        style={{ padding: '8px 16px', fontSize: '0.85rem', borderRadius: '10px' }}
+                                        onClick={handleActivateNotifications}
+                                    >
+                                        Ativar Alertas
+                                    </button>
+                                    <button 
+                                        style={{ background: 'none', border: 'none', cursor: 'pointer', padding: '4px', color: 'var(--co-text-muted)' }}
+                                        onClick={handleDismissNotificationBanner}
+                                    >
+                                        <X size={18} />
+                                    </button>
+                                </div>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
                 {/* Alerta de Emergência - Mockado com o estado de permissão */}
                 {hasEmergencyEnabled && (

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Loader2, Camera, Lock, Eye, EyeOff, X, ChevronLeft } from 'lucide-react';
+import { Loader2, Camera, Lock, Eye, EyeOff, X, ChevronLeft, Bell, BellOff, Info } from 'lucide-react';
 import toast from 'react-hot-toast';
 import api from '../../services/api';
 import { getProxyUrl } from '../../utils/fileProxy';
+import { getNotificationStatus, requestNotificationPermission, unsubscribeFromPush } from '../../utils/notifications';
 import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -15,6 +16,7 @@ export function PsychologistProfile() {
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
+    const [notificationStatus, setNotificationStatus] = useState<string>(getNotificationStatus());
 
     // Form states
     const [name, setName] = useState('');
@@ -125,6 +127,25 @@ export function PsychologistProfile() {
         }
     };
 
+    const handleToggleNotifications = async () => {
+        if (notificationStatus === 'granted') {
+            const ok = await unsubscribeFromPush();
+            if (ok) {
+                setNotificationStatus('default');
+                toast.success("Notificações desativadas.");
+            }
+        } else {
+            const granted = await requestNotificationPermission();
+            if (granted) {
+                setNotificationStatus('granted');
+                toast.success("Notificações ativadas com sucesso!");
+            } else {
+                setNotificationStatus(getNotificationStatus());
+                toast.error("Não foi possível ativar as notificações.");
+            }
+        }
+    };
+
     const handleChangePassword = async () => {
         if (!currentPassword || !newPassword) {
             toast.error("Preencha a senha atual e a nova senha.");
@@ -225,6 +246,41 @@ export function PsychologistProfile() {
                             </button>
                         </div>
                     </div>
+                </div>
+
+                <div className="glass-panel" style={{ padding: '24px', marginBottom: '32px' }}>
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '16px' }}>
+                        <div style={{ width: '40px', height: '40px', borderRadius: '12px', background: 'var(--co-action, #9575CD)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <Bell size={20} color="white" />
+                        </div>
+                        <div>
+                            <h2 style={{ fontSize: '1.15rem', marginBottom: '2px' }}>Notificações Push</h2>
+                            <p className="text-muted" style={{ fontSize: '0.85rem' }}>Receba alertas de novos comentários e agendamentos</p>
+                        </div>
+                    </div>
+
+                    <div style={{ background: notificationStatus === 'granted' ? '#E8F5E9' : notificationStatus === 'denied' ? '#FFEBEE' : '#F5F5F5', padding: '16px', borderRadius: '12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '12px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            {notificationStatus === 'granted' ? <Bell size={18} color="#2E7D32" /> : <BellOff size={18} color={notificationStatus === 'denied' ? '#D32F2F' : '#666'} />}
+                            <span style={{ fontSize: '0.9rem', fontWeight: 500, color: notificationStatus === 'granted' ? '#2E7D32' : notificationStatus === 'denied' ? '#D32F2F' : 'var(--co-text-dark)' }}>
+                                {notificationStatus === 'granted' ? 'Ativadas neste dispositivo' : notificationStatus === 'denied' ? 'Bloqueadas no navegador' : 'Aguardando ativação'}
+                            </span>
+                        </div>
+                        <button
+                            className="btn-secondary"
+                            style={{ padding: '8px 16px', borderRadius: '12px', fontSize: '0.85rem', background: 'white', border: 'none', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', cursor: 'pointer' }}
+                            onClick={handleToggleNotifications}
+                            disabled={notificationStatus === 'unsupported'}
+                        >
+                            {notificationStatus === 'granted' ? 'Desativar' : 'Ativar Agora'}
+                        </button>
+                    </div>
+                    
+                    {notificationStatus === 'denied' && (
+                        <p style={{ fontSize: '0.75rem', color: '#D32F2F', marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <Info size={14} /> Você bloqueou as notificações. Ative-as nas configurações do seu navegador para receber alertas.
+                        </p>
+                    )}
                 </div>
 
                 <div className="glass-panel" style={{ padding: '32px' }}>
