@@ -12,6 +12,8 @@ import { SEO } from '../components/SEO';
 import { offlineSyncService } from '../services/offlineSyncService';
 import { getProxyUrl } from '../utils/fileProxy';
 import { getNotificationStatus, requestNotificationPermission } from '../utils/notifications';
+import { useNotifications } from '../hooks/useNotifications';
+import { NotificationCenter } from '../components/NotificationCenter';
 
 export function Dashboard() {
     const navigate = useNavigate();
@@ -43,6 +45,9 @@ export function Dashboard() {
     const [showIOSModal, setShowIOSModal] = useState(false);
     const [savingMood, setSavingMood] = useState(false);
     const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const { notifications, unreadCount, markAsRead } = useNotifications();
 
     useEffect(() => {
         loadDashboardData();
@@ -217,19 +222,28 @@ export function Dashboard() {
                         <span style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--co-text-dark)' }}>{streak}</span>
                     </div>
                     <div
-                        onClick={() => navigate('/perfil')}
+                        onClick={() => setShowNotifications(true)}
                         style={{ 
                             width: '48px', height: '48px', borderRadius: '24px', 
                             backgroundColor: 'var(--co-lavender)', 
                             display: 'flex', alignItems: 'center', justifyContent: 'center', 
                             fontWeight: 'bold', cursor: 'pointer', overflow: 'hidden',
-                            border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                            border: '2px solid white', boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
+                            position: 'relative'
                         }}
                     >
                         {avatarUrl ? (
                             <img src={getProxyUrl(avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         ) : (
                             userInitial
+                        )}
+                        {unreadCount > 0 && (
+                            <div style={{ 
+                                position: 'absolute', top: '-2px', right: '-2px', 
+                                width: '15px', height: '15px', borderRadius: '50%', 
+                                background: 'var(--co-action)', border: '2px solid white',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            }} />
                         )}
                     </div>
                 </div>
@@ -693,6 +707,12 @@ export function Dashboard() {
                 )}
             </AnimatePresence>
 
+            <NotificationCenter 
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                notifications={notifications}
+                onMarkAsRead={markAsRead}
+            />
         </div>
     );
 }

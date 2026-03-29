@@ -7,12 +7,20 @@ import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { getNotificationStatus, requestNotificationPermission } from '../../utils/notifications';
 import { AnimatePresence } from 'framer-motion';
+import { useNotifications } from '../../hooks/useNotifications';
+import { NotificationCenter } from '../../components/NotificationCenter';
+import { getProxyUrl } from '../../utils/fileProxy';
+import { User as UserIcon } from 'lucide-react';
 
 export function PsychologistDashboard() {
     const navigate = useNavigate();
     const [patients, setPatients] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showNotificationBanner, setShowNotificationBanner] = useState(false);
+    const [showNotifications, setShowNotifications] = useState(false);
+
+    const { notifications, unreadCount, markAsRead } = useNotifications();
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
 
     useEffect(() => {
         const fetchPatients = async () => {
@@ -58,9 +66,37 @@ export function PsychologistDashboard() {
             <PsychologistSidebar activePath="dashboard" />
 
             <div className="psi-main">
-                <header style={{ marginBottom: '32px' }}>
-                    <h1 style={{ fontSize: '1.8rem' }}>Visão Geral</h1>
-                    <p className="text-muted">Acompanhe seus alertas e seus pacientes recentes.</p>
+                <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+                    <div>
+                        <h1 style={{ fontSize: '1.8rem' }}>Visão Geral</h1>
+                        <p className="text-muted">Acompanhe seus alertas e seus pacientes recentes.</p>
+                    </div>
+                    
+                    <div 
+                        onClick={() => setShowNotifications(true)}
+                        style={{ 
+                            width: '44px', height: '44px', borderRadius: '12px', 
+                            backgroundColor: 'var(--co-lavender)', 
+                            display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                            fontWeight: 'bold', cursor: 'pointer', overflow: 'hidden',
+                            border: '1px solid rgba(0,0,0,0.05)', position: 'relative',
+                            boxShadow: '0 4px 12px rgba(0,0,0,0.05)'
+                        }}
+                    >
+                        {user?.avatarUrl ? (
+                            <img src={getProxyUrl(user.avatarUrl)} alt="Avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            <UserIcon size={20} color="var(--co-accent)" />
+                        )}
+                        {unreadCount > 0 && (
+                            <div style={{ 
+                                position: 'absolute', top: '-4px', right: '-4px', 
+                                width: '12px', height: '12px', borderRadius: '50%', 
+                                background: 'var(--co-action)', border: '2px solid white',
+                                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+                            }} />
+                        )}
+                    </div>
                 </header>
 
                 <AnimatePresence>
@@ -170,6 +206,13 @@ export function PsychologistDashboard() {
                     </div>
                 </div>
             </div>
+
+            <NotificationCenter 
+                isOpen={showNotifications}
+                onClose={() => setShowNotifications(false)}
+                notifications={notifications}
+                onMarkAsRead={markAsRead}
+            />
         </div>
     );
 }

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: 'https://planner-backend-ecru.vercel.app/api', // URL do nosso backend
+    baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000/api', // URL do nosso backend
 });
 
 // Interceptor para injetar o Token JWT em todas as requisições (Exceto Login e Registro)
