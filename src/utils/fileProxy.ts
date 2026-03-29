@@ -6,7 +6,7 @@ export function getProxyUrl(originalUrl: string | null | undefined): string | un
     // Se for URL do Vercel Blob (privado), injeta o proxy do backend
     if (originalUrl.includes('vercel-storage.com')) {
         const token = localStorage.getItem('token');
-        return `${api.defaults.baseURL}/upload/proxy?url=${encodeURIComponent(originalUrl)}&token=${token}`;
+        return `${api.defaults.baseURL}/upload/proxy?url=${encodeURIComponent(originalUrl)}&token=${encodeURIComponent(token || '')}`;
     }
 
     // Caso seja foto do google, unspash, ou base64, retorna puro
