@@ -9,9 +9,11 @@ import Cropper from 'react-easy-crop';
 import { getCroppedImg } from '../../utils/canvasUtils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
+import { usePWAInstall } from '../../hooks/usePWAInstall';
 
 export function PsychologistProfile() {
     const navigate = useNavigate();
+    const { isIOS } = usePWAInstall();
 
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -263,7 +265,7 @@ export function PsychologistProfile() {
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {notificationStatus === 'granted' ? <Bell size={18} color="#2E7D32" /> : <BellOff size={18} color={notificationStatus === 'denied' ? '#D32F2F' : '#666'} />}
                             <span style={{ fontSize: '0.9rem', fontWeight: 500, color: notificationStatus === 'granted' ? '#2E7D32' : notificationStatus === 'denied' ? '#D32F2F' : 'var(--co-text-dark)' }}>
-                                {notificationStatus === 'granted' ? 'Ativadas neste dispositivo' : notificationStatus === 'denied' ? 'Bloqueadas no navegador' : 'Aguardando ativação'}
+                                {notificationStatus === 'granted' ? 'Ativadas neste dispositivo' : notificationStatus === 'denied' ? 'Bloqueadas pelo Navegador' : 'Aguardando ativação'}
                             </span>
                         </div>
                         <button
@@ -277,8 +279,18 @@ export function PsychologistProfile() {
                     </div>
                     
                     {notificationStatus === 'denied' && (
-                        <p style={{ fontSize: '0.75rem', color: '#D32F2F', marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                            <Info size={14} /> Você bloqueou as notificações. Ative-as nas configurações do seu navegador para receber alertas.
+                        <p style={{ fontSize: '0.75rem', color: '#D32F2F', marginTop: '12px', display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1.4 }}>
+                            <Info size={14} style={{ flexShrink: 0 }} /> 
+                            {isIOS 
+                                ? 'O iOS bloqueou as notificações. Vá em "Ajustes" -> "Notificações" -> "Ponto e Vírgula" para permitir.' 
+                                : 'O navegador reportou que as notificações estão desativadas. Tente clicar no ícone de cadeado 🔒 na barra de endereços para redefinir as permissões.'}
+                        </p>
+                    )}
+                    {notificationStatus === 'unsupported' && (
+                        <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '12px', lineHeight: 1.4 }}>
+                            {isIOS 
+                                ? 'Para usar notificações no iPhone, você precisa instalar este aplicativo (clique no ícone de compartilhar e pesquise por "Adicionar à Tela de Início").' 
+                                : 'Seu navegador atual não suporta notificações push.'}
                         </p>
                     )}
                 </div>

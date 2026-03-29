@@ -48,6 +48,7 @@ export const requestNotificationPermission = async () => {
 };
 
 export const getNotificationStatus = () => {
+    if (typeof window === 'undefined' || !('Notification' in window)) return 'unsupported';
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
         return 'unsupported';
     }
