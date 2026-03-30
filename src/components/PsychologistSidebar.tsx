@@ -20,7 +20,7 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
         <div className="psi-sidebar" style={{ position: 'relative' }}>
                 <div 
                     onClick={() => setShowNotifications(true)}
-                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', position: 'relative' }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer', position: 'relative', marginBottom: '32px' }}
                 >
                     <div style={{ position: 'relative' }}>
                         <div style={{ width: '40px', height: '40px', borderRadius: '20px', backgroundColor: 'var(--co-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', overflow: 'hidden', border: '2px solid white', boxShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
