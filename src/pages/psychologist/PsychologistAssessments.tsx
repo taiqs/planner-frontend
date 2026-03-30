@@ -1,15 +1,22 @@
 import { useState, useEffect } from 'react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
-import { Loader2, Brain, Calendar, ChevronRight } from 'lucide-react';
+import { 
+    Loader2, 
+    Brain, 
+    Calendar, 
+    ChevronRight, 
+    Trash2 
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 import api from '../../services/api';
+import toast from 'react-hot-toast';
 
 interface AssessmentResult {
     id: string;
     assessmentType: string;
     score: number;
     resultType: string;
-    answers: Record<string, string>;
+    answers: any;
     createdAt: string;
     user: {
         id: string;
@@ -24,19 +31,33 @@ export function PsychologistAssessments() {
     const [isLoading, setIsLoading] = useState(true);
     const [selectedUser, setSelectedUser] = useState<AssessmentResult | null>(null);
 
+    const fetchResults = async () => {
+        try {
+            const response = await api.get('/assessments/all');
+            setResults(response.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchResults = async () => {
-            try {
-                const response = await api.get('/assessments/all');
-                setResults(response.data);
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
         fetchResults();
     }, []);
+
+    const handleDelete = async (id: string) => {
+        if (!confirm("Deseja realmente excluir este registro de avaliação? Isso não poderá ser desfeito.")) return;
+
+        try {
+            await api.delete(`/assessments/${id}`);
+            toast.success("Avaliação excluída!");
+            setResults(prev => prev.filter(r => r.id !== id));
+            setSelectedUser(null);
+        } catch (error) {
+            toast.error("Erro ao excluir avaliação.");
+        }
+    };
 
     return (
         <div style={{ display: 'flex', minHeight: '100vh', background: 'var(--co-background)' }}>
@@ -87,11 +108,20 @@ export function PsychologistAssessments() {
                                             <h2 style={{ fontSize: '1.5rem', marginBottom: '4px' }}>{selectedUser.user.name}</h2>
                                             <p className="text-muted">{selectedUser.user.email}</p>
                                         </div>
-                                        <div style={{ textAlign: 'right' }}>
-                                            <span style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--co-lavender)', color: 'var(--co-primary)', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 600 }}>
-                                                {selectedUser.resultType}
-                                            </span>
-                                            <p className="text-muted" style={{ fontSize: '0.8rem', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '12px' }}>
+                                            <div style={{ display: 'flex', gap: '8px' }}>
+                                                <button 
+                                                    onClick={() => handleDelete(selectedUser.id)}
+                                                    style={{ background: '#FFEBEE', border: 'none', color: '#D32F2F', padding: '8px', borderRadius: '10px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                                                    title="Excluir Avaliação"
+                                                >
+                                                    <Trash2 size={18} />
+                                                </button>
+                                                <span style={{ display: 'inline-block', padding: '6px 12px', background: 'var(--co-lavender)', color: 'var(--co-primary)', borderRadius: '16px', fontSize: '0.85rem', fontWeight: 600, height: 'fit-content' }}>
+                                                    {selectedUser.resultType}
+                                                </span>
+                                            </div>
+                                            <p className="text-muted" style={{ fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px', justifyContent: 'flex-end' }}>
                                                 <Calendar size={14} /> {new Date(selectedUser.createdAt).toLocaleDateString()}
                                             </p>
                                         </div>
