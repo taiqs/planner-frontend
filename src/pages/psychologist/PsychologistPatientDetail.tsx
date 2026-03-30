@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ChevronRight, Loader2, Save, Lock } from 'lucide-react';
+import { ChevronRight, Loader2, Save, Lock, Mail, Phone } from 'lucide-react';
 import { PsychologistSidebar } from '../../components/PsychologistSidebar';
 import { MOOD_CATEGORIES } from '../../utils/constants';
 import toast from 'react-hot-toast';
@@ -122,7 +122,18 @@ export function PsychologistPatientDetail() {
                     </button>
                     <div>
                         <h1 style={{ fontSize: '1.8rem', textTransform: 'capitalize' }}>{patient.name}</h1>
-                        <p className="text-muted">{getAge(patient.birthDate)} • {patient.pronouns || 'Sem pronome'}</p>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginTop: '4px' }}>
+                            <p className="text-muted" style={{ margin: 0 }}>{getAge(patient.birthDate)} • {patient.pronouns || 'Sem pronome'}</p>
+                            <span style={{ color: '#ddd' }}>|</span>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--co-text-dark)' }}>
+                                <Mail size={14} className="text-muted" /> {patient.email}
+                            </div>
+                            {patient.phone && (
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.9rem', color: 'var(--co-text-dark)' }}>
+                                    <Phone size={14} className="text-muted" /> {patient.phone}
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </header>
 
@@ -145,34 +156,34 @@ export function PsychologistPatientDetail() {
 
                 {activeTab === 'RESUMO' && (
                     <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '24px' }}>
-                        {!patient.psychologistId ? (
+                        <div className="glass-card" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: patient.psychologistId ? 0 : '12px' }}>
+                            <div>
+                                <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Botão de Emergência</h3>
+                                <p className="text-muted" style={{ fontSize: '0.9rem' }}>Permitir que este usuário acesse o chat de crise no dashboard dele.</p>
+                            </div>
+                            <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: patient.emergencyEnabled ? '#E8F5E9' : 'var(--co-lavender)', padding: '8px 16px', borderRadius: '100px', opacity: isSavingToggle ? 0.5 : 1 }}>
+                                <input
+                                    type="checkbox"
+                                    checked={patient.emergencyEnabled}
+                                    onChange={handleEmergencyToggle}
+                                    disabled={isSavingToggle}
+                                    style={{ marginRight: '8px', accentColor: 'var(--co-success-text)', cursor: 'pointer', width: '18px', height: '18px' }}
+                                />
+                                <span style={{ fontSize: '0.9rem', fontWeight: 600, color: patient.emergencyEnabled ? 'var(--co-success-text)' : 'inherit' }}>
+                                    {patient.emergencyEnabled ? 'Liberado' : 'Bloqueado'}
+                                </span>
+                            </label>
+                        </div>
+
+                        {!patient.psychologistId && (
                             <div className="glass-card" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--co-lavender)', border: '2px dashed var(--co-accent)' }}>
                                 <div>
                                     <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Usuário Livre</h3>
-                                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Este usuário ainda não se vinculou a você. Alguns controles estão restritos até o vínculo.</p>
+                                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Este usuário ainda não se vinculou à sua clínica.</p>
                                 </div>
                                 <button className="btn-primary" onClick={handleLinkPatient} disabled={isLinking}>
                                     {isLinking ? <Loader2 size={16} className="animate-spin" /> : 'Vincular Paciente'}
                                 </button>
-                            </div>
-                        ) : (
-                            <div className="glass-card" style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                <div>
-                                    <h3 style={{ fontSize: '1.1rem', marginBottom: '4px' }}>Botão de Emergência</h3>
-                                    <p className="text-muted" style={{ fontSize: '0.9rem' }}>Permitir que este paciente acesse o chat de crise.</p>
-                                </div>
-                                <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer', background: patient.emergencyEnabled ? '#E8F5E9' : 'var(--co-lavender)', padding: '8px 16px', borderRadius: '100px', opacity: isSavingToggle ? 0.5 : 1 }}>
-                                    <input
-                                        type="checkbox"
-                                        checked={patient.emergencyEnabled}
-                                        onChange={handleEmergencyToggle}
-                                        disabled={isSavingToggle}
-                                        style={{ marginRight: '8px', accentColor: 'var(--co-success-text)', cursor: 'pointer', width: '18px', height: '18px' }}
-                                    />
-                                    <span style={{ fontSize: '0.9rem', fontWeight: 600, color: patient.emergencyEnabled ? 'var(--co-success-text)' : 'inherit' }}>
-                                        {patient.emergencyEnabled ? 'Permitido' : 'Desativado'}
-                                    </span>
-                                </label>
                             </div>
                         )}
 

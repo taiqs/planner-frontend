@@ -56,7 +56,7 @@ export function PsychologistSidebar({ activePath }: { activePath: string }) {
                     onClick={() => navigate('/psicologo/pacientes')}
                     style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 16px', borderRadius: '12px', border: 'none', background: activePath === '/psicologo/pacientes' || activePath === 'pacientes' ? 'var(--co-serene-blue)' : 'transparent', color: activePath === '/psicologo/pacientes' || activePath === 'pacientes' ? 'var(--co-text-dark)' : 'var(--co-text-muted)', fontWeight: activePath === '/psicologo/pacientes' || activePath === 'pacientes' ? 600 : 500, cursor: 'pointer', textAlign: 'left', transition: 'all 0.2s' }}
                 >
-                    <Users size={20} /> Prontuários
+                    <Users size={20} /> Gestão de Usuários
                 </button>
                 <button
                     onClick={() => navigate('/psicologo/avaliacoes')}

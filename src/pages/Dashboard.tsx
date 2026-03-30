@@ -23,7 +23,6 @@ export function Dashboard() {
     const [userInitial, setUserInitial] = useState('P');
     const [avatarUrl, setAvatarUrl] = useState('');
     const [streak, setStreak] = useState(0);
-    const [emergencyEnabled, setEmergencyEnabled] = useState(false);
     const [hasPsychologist, setHasPsychologist] = useState(false);
     const [hasVaultEntries, setHasVaultEntries] = useState(false);
     const [interestedInTherapy, setInterestedInTherapy] = useState(false);
@@ -93,7 +92,6 @@ export function Dashboard() {
             setUserName(user.name?.split(' ')[0] || 'Paciente');
             setUserInitial(user.name?.charAt(0).toUpperCase() || 'P');
             setAvatarUrl(user.avatarUrl || '');
-            setEmergencyEnabled(user.emergencyEnabled);
             setHasPsychologist(!!user.psychologistId);
             setInterestedInTherapy(!!user.interestedInTherapy);
             setHasVaultEntries(vaultRes.data.length > 0);
@@ -554,26 +552,24 @@ export function Dashboard() {
                     </>
                 )}
 
-                {emergencyEnabled && (
-                    <motion.div
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => navigate('/emergencia')}
-                        style={{
-                            width: '100%', padding: '20px', borderRadius: '24px', background: 'linear-gradient(135deg, #FFCDD2 0%, #E57373 100%)',
-                            border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', boxShadow: '0 8px 16px rgba(229, 115, 115, 0.4)'
-                        }}
-                    >
-                        <div style={{ background: 'rgba(255,255,255,0.2)', padding: '12px', borderRadius: '16px' }}>
-                            <ShieldAlert size={28} />
-                        </div>
-                        <div style={{ flex: 1, textAlign: 'left' }}>
-                            <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Botão de Emergência</h3>
-                            <p style={{ fontSize: '0.9rem', opacity: 0.9 }}>Preciso de ajuda agora</p>
-                        </div>
-                        <ChevronRight size={20} />
-                    </motion.div>
-                )}
+                <motion.div
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate('/emergencia')}
+                    style={{
+                        width: '100%', padding: '20px', borderRadius: '24px', background: 'linear-gradient(135deg, #FFCDD2 0%, #E57373 100%)',
+                        border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '16px', cursor: 'pointer', boxShadow: '0 8px 16px rgba(229, 115, 115, 0.4)'
+                    }}
+                >
+                    <div style={{ background: 'rgba(255,255,255,0.2)', padding: '12px', borderRadius: '16px' }}>
+                        <ShieldAlert size={28} />
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                        <h3 style={{ fontSize: '1.2rem', marginBottom: '4px', textShadow: '0 2px 4px rgba(0,0,0,0.1)' }}>Botão de Emergência</h3>
+                        <p style={{ fontSize: '0.9rem', opacity: 0.9 }}>Preciso de ajuda agora</p>
+                    </div>
+                    <ChevronRight size={20} />
+                </motion.div>
             </div>
 
             {/* Modal de Planos */}
