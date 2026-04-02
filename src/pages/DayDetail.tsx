@@ -23,6 +23,14 @@ export function DayDetail() {
     const [moodNotes, setMoodNotes] = useState('');
     const [savingMood, setSavingMood] = useState(false);
 
+    // Verifica se a data é hoje ou passado (bloqueia dias futuros)
+    const isFutureDay = () => {
+        if (!diaId) return false;
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        return diaId > todayStr;
+    };
+
     useEffect(() => {
         loadDayData();
     }, [diaId]);
@@ -93,7 +101,7 @@ export function DayDetail() {
                     <p className="text-muted" style={{ textTransform: 'capitalize' }}>{getFormattedWeek()}</p>
                 </div>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                     {!moodData && (
+                     {!moodData && !isFutureDay() && (
                         <button 
                             className="btn-secondary" 
                             style={{ padding: '8px 12px', fontSize: '0.8rem', borderRadius: '12px', background: 'var(--co-lavender)' }}

@@ -83,6 +83,20 @@ export function Calendar() {
         return `${y}-${mo.toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}`;
     };
 
+    // Verifica se uma data (YYYY-MM-DD) é futura
+    const isFutureDate = (dayStr: string) => {
+        const today = new Date();
+        const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        return dayStr > todayStr;
+    };
+
+    // Verifica se hoje já tem humor cadastrado
+    const todayStr = (() => {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+    })();
+    const todayHasMood = !!getMoodForDay(todayStr);
+
     const getEmoji = (day: number) => {
         const mood = getMoodForDay(formatDayStr(day));
         if (mood && MOOD_CATEGORIES[mood.mainMood as keyof typeof MOOD_CATEGORIES]) {
@@ -152,7 +166,7 @@ export function Calendar() {
 
     const handleDayClick = (day: number) => {
         const dayStr = formatDayStr(day);
-        // Envia o dia para a rota DayDetail via State
+        if (isFutureDate(dayStr)) return; // Bloqueia navegação para dias futuros
         navigate(`/dia/${dayStr}`);
     };
 
@@ -180,17 +194,26 @@ export function Calendar() {
                         <div key={`empty-${slot}`} className="calendar-day" style={{ visibility: 'hidden' }}></div>
                     ))}
 
-                    {daysInMonth.map((day) => (
+                    {daysInMonth.map((day) => {
+                        const dayStr = formatDayStr(day);
+                        const isFuture = isFutureDate(dayStr);
+                        return (
                         <motion.div
                             key={day}
                             className="calendar-day"
-                            whileHover={{ scale: 1.05 }}
+                            whileHover={isFuture ? {} : { scale: 1.05 }}
                             onClick={() => handleDayClick(day)}
+                            style={{
+                                opacity: isFuture ? 0.35 : 1,
+                                cursor: isFuture ? 'default' : 'pointer',
+                                pointerEvents: isFuture ? 'none' : 'auto',
+                            }}
                         >
                             <span className="calendar-day-number">{day}</span>
                             <span className="calendar-emoji">{getEmoji(day)}</span>
                         </motion.div>
-                    ))}
+                        );
+                    })}
                 </div>
             </div>
 
@@ -232,7 +255,8 @@ export function Calendar() {
                 </div>
             </div>
 
-            {/* Botão Flutuante (FAB) */}
+            {/* Botão Flutuante (FAB) - só exibe se hoje não tem humor registrado */}
+            {!todayHasMood && (
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -257,6 +281,7 @@ export function Calendar() {
             >
                 <Plus size={32} />
             </motion.button>
+            )}
 
             {/* Modal de Adição Rápida */}
             <AnimatePresence>

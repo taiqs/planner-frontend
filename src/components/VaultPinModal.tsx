@@ -13,10 +13,12 @@ interface VaultPinModalProps {
 export function VaultPinModal({ isOpen, onSuccess, userHasPin }: VaultPinModalProps) {
     const [pin, setPin] = useState('');
     const [confirmPin, setConfirmPin] = useState('');
-    const [step, setStep] = useState<'verify' | 'ask' | 'create' | 'confirm'>(userHasPin ? 'verify' : 'ask');
+    const [step, setStep] = useState<'verify' | 'ask' | 'create' | 'confirm'>('verify');
     const [error, setError] = useState('');
 
     useEffect(() => {
+        // Sempre que o modal abre ou o status do PIN muda, resetamos e definimos o step correto.
+        // Isso garante que o step reflita o estado real do servidor (não o valor inicial do useState).
         if (isOpen) {
             setPin('');
             setConfirmPin('');
