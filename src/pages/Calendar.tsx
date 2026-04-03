@@ -60,15 +60,17 @@ export function Calendar() {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     };
 
-    // Helper local: YYYY-MM-DD no fuso do usuário (evita bug de UTC)
+    // Helper local: YYYY-MM-DD no fuso do usuário (usado apenas onde precisamos de data local)
     const toLocalDateStr = (date: Date) =>
         `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 
-    // Helper: Pega Humor do Dia (YYYY-MM-DD string no fuso local)
+    // Helper: Pega Humor do Dia
+    // O backend armazena datas como UTC midnight (ex: 2026-04-02T00:00:00Z),
+    // onde o YYYY-MM-DD representa a data local que o usuário registrou.
+    // Então usamos toISOString().split('T')[0] para extrair essa data corretamente.
     const getMoodForDay = (dayStr: string) => {
         return moodHistory.find(m => {
-            // m.date vem como string ISO do backend; converte para Date local
-            return toLocalDateStr(new Date(m.date)) === dayStr;
+            return new Date(m.date).toISOString().split('T')[0] === dayStr;
         });
     };
 
