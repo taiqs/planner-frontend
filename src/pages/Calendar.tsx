@@ -60,12 +60,15 @@ export function Calendar() {
         setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1, 1));
     };
 
-    // Helper: Pega Humor do Dia (YYYY-MM-DD string para facilitar)
+    // Helper local: YYYY-MM-DD no fuso do usuário (evita bug de UTC)
+    const toLocalDateStr = (date: Date) =>
+        `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
+    // Helper: Pega Humor do Dia (YYYY-MM-DD string no fuso local)
     const getMoodForDay = (dayStr: string) => {
         return moodHistory.find(m => {
-            const mDate = new Date(m.date);
-            // Ignore o Timezone local (Y-m-d exato do BD UTC simplificado)
-            return mDate.toISOString().split('T')[0] === dayStr;
+            // m.date vem como string ISO do backend; converte para Date local
+            return toLocalDateStr(new Date(m.date)) === dayStr;
         });
     };
 
@@ -111,7 +114,7 @@ export function Calendar() {
         const d = new Date(today);
         d.setDate(today.getDate() - (6 - i)); // -6, -5, ..., 0
 
-        const dayStr = d.toISOString().split('T')[0];
+        const dayStr = toLocalDateStr(d); // data local, não UTC
         const mood = getMoodForDay(dayStr);
 
         let level = 3; // Neutro Default
