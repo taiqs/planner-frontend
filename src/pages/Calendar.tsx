@@ -9,12 +9,14 @@ import api from '../services/api';
 import { offlineSyncService } from '../services/offlineSyncService';
 
 // Mapeamento de Humor Base para Nível (1 a 5) para o Gráfico
+// As chaves devem bater com as keys de MOOD_CATEGORIES em constants.ts
 const MOOD_LEVELS: Record<string, number> = {
-    'triste': 1,
-    'irritada': 2,
-    'neutra': 3,
-    'boa': 4,
-    'radiante': 5
+    'sad': 1,       // Tristeza
+    'angry': 2,     // Raiva
+    'anxious': 2,   // Ansiedade (nível parecido com raiva/negatividade)
+    'neutral': 3,   // Neutra
+    'happy': 4,     // Calma
+    'excited': 5,   // Motivada
 };
 
 export function Calendar() {
@@ -237,8 +239,11 @@ export function Calendar() {
                                     contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 8px 24px rgba(0,0,0,0.12)', background: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(8px)' }}
                                     itemStyle={{ color: 'var(--co-text-dark)', fontWeight: 600 }}
                                     formatter={(value: any) => {
-                                        const emojis = ['😢', '😠', '😐', '🙂', '🤩'];
-                                        return [emojis[(value as number) - 1], 'Nível de Humor'];
+                                        // Nível 1=Tristeza, 2=Raiva/Ansiedade, 3=Neutra, 4=Calma, 5=Motivada
+                                        const emojis = ['😢', '😰', '😐', '🙂', '🤩'];
+                                        const labels = ['Difícil', 'Tensa', 'Neutra', 'Bem', 'Ótima'];
+                                        const idx = (value as number) - 1;
+                                        return [`${emojis[idx] ?? '😐'} ${labels[idx] ?? ''}`, 'Humor'];
                                     }}
                                     labelStyle={{ color: 'var(--co-text-muted)', marginBottom: '4px' }}
                                 />
