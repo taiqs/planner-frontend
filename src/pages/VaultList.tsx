@@ -39,7 +39,7 @@ export function VaultList() {
     const checkPinStatus = async () => {
         try {
             const { data: user } = await api.get('/user/me');
-            setUserHasPin(!!user.vaultPin);
+            setUserHasPin(!!user.hasVaultPin);
             setIsPinModalOpen(true);
         } catch (error) {
             console.error(error);
